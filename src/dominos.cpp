@@ -16,12 +16,6 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-/* 
- * Base code for CS 296 Software Systems Lab 
- * Department of Computer Science and Engineering, IIT Bombay
- * Instructor: Parag Chaudhuri
- */
-
 
 #include "cs296_base.hpp"
 #include "render.hpp"
@@ -37,8 +31,63 @@ using namespace std;
 
 #include "dominos.hpp"
 
+
+
 namespace cs296
 {
+
+void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, float plank_breadth)
+{
+
+   b2Body* sbody;/// sbody is a b2Body* variable which represents the wedge
+   b2PolygonShape poly;/// poly is a polygon shape we will create of type b2Polygonshape 
+   b2Vec2 vertices[3];/// create an 2D array using b2Vec2 of size 3 which will store coordinates of the vertices of the polygon poly
+   /** store the positions of the 3 vertices. (-1,0) , (1,0 ) and (0,1.5)*/
+   vertices[0].Set(-1,0);
+   vertices[1].Set(1,0);
+   vertices[2].Set(0,1.5);
+   poly.Set(vertices, 3);///create a triangular shape called poly with the 3 vertices as specified above
+   b2FixtureDef wedgefd;/// define a b2FixtureDef variable wedgefd to create a fixture for sbody
+   wedgefd.shape = &poly;///set its shape to poly defined above
+   wedgefd.density = 2.0f;/// set its density to 2
+   wedgefd.friction = 0.0f;/// set its friction to 0 
+   wedgefd.restitution = 0.0f;/// set its restitution to 0
+   b2BodyDef wedgebd;/// define a b2BodyDef variable wedgebd which will be used to create the actual wedge
+   wedgebd.position.Set(x_pos, y_pos);/// let its position be (30,0) in world coordinates i.e it is on the ground
+   sbody = m_world->CreateBody(&wedgebd);/// create the body using wedgebd
+   sbody->CreateFixture(&wedgefd);/// add the fixture wedgefd to sbody  ( the vertices of wedgefd will have coordinates wrt sbody )
+
+	///<br>
+    /// 10. b)<b>The plank on top of the wedge</b>
+    //The plank on top of the wedge
+    b2PolygonShape shape;/// shape is a polygon shape we will create of type  b2PolygonShape
+    shape.SetAsBox(plank_length, plank_breadth);/// it is a 15 X 0.2 rectangle 
+    b2BodyDef bd2;/// define a b2BodyDef variable bd2 which will be used to create the plank
+    bd2.position.Set(x_pos, y_pos + 3);/// let its position be (30,1.5) in world coordinates i.e it touches the upper vertex of wedge.
+    bd2.type = b2_dynamicBody;/// let it be dynamic i.e it can move
+    b2Body* body = m_world->CreateBody(&bd2);/// create body ( type  b2Body) using bd2
+    b2FixtureDef *fd2 = new b2FixtureDef;/// define a b2FixtureDef* variable fd2 to create a fixture for body
+    fd2->density = 0.5f;/// set its density to 1
+    fd2->shape = new b2PolygonShape;
+    fd2->shape = &shape;/// set its shape to the shape variable defined above
+    body->CreateFixture(fd2); /// add the fixture fd2 to body
+	
+	///<br> 
+    /** 10. c) <b>create a revolute joint at the point where the wedge and the plank meet for the see-saw.</b>*/
+    b2RevoluteJointDef jd;///define a revolute (revolving) joint jd of type b2RevoluteJointDef
+    b2Vec2 anchor;/// create a 2d array using b2vec2 called anchor to store location of anchor of point
+    anchor.Set(x_pos, y_pos+3);/// set coordinates of anchor to (30,1.5)
+    jd.Initialize(sbody, body, anchor);/// initialise jd : define the 2 bodies (sbody and body) and location of common anchor
+    jd.enableLimit = true;/// limit the rotation of the joint
+  	jd.lowerAngle = -1;
+  	jd.upperAngle =  1;
+    m_world->CreateJoint(&jd);/// create the joint using jd
+
+
+}
+
+
+
   dominos_t::dominos_t()
   {
     /// <br> 
@@ -71,7 +120,7 @@ namespace cs296
 	/// <br>
 	/// <b> A horizontal shelf just below the open box (connected to the pulley)
     {
-	b2EdgeShape shape;
+	  b2EdgeShape shape;
       shape.Set(b2Vec2(-13.0f,26.0f) , b2Vec2(-7.0f,26.0f));  
 	
       b2BodyDef bd;/// b2BodyDef type variable bd which describes the body. It is static
@@ -326,7 +375,7 @@ namespace cs296
 	circle1.m_radius = 1.0;
 	b2FixtureDef ballfd1;
       ballfd1.shape = &circle1;
-      ballfd1.density = 2.0f;
+      ballfd1.density = 0.4f;
       ballfd1.friction = 0.1f;
       ballfd1.restitution = 0.0f;
       b2BodyDef ballbd1;
@@ -375,7 +424,7 @@ namespace cs296
 		// test ball 
 		b2BodyDef ballbd;
 		ballbd.type = b2_dynamicBody;
-		
+	
 		ballbd.position.Set(2.0f,23.0f );
 		spherebody = m_world->CreateBody(&ballbd);
 		spherebody->CreateFixture(&ballfd);
@@ -514,6 +563,102 @@ namespace cs296
 	  	body->CreateFixture(&fd);/// add a fixture fd to the body  
 	}	
     }
+    
+    
+    ///<br>
+    /// 8. <b>The revolving horizontal platform</b>
+    //The revolving horizontal platform
+    {
+      b2PolygonShape shape, shape2;  
+      shape.SetAsBox(2.2f, 0.2f);///<br> define a 4.4 X 0.4 rectangular shape called shape (b2PolygonShape type)
+	  shape2.SetAsBox(2.2f, 0.2f);
+	
+      b2BodyDef bd, bd3; /// define a b2BodyDef variable bd which will be used to create the platform 
+      bd.position.Set(38.0f, 40.0f);/// set its position as (14,14)
+	  bd3.position.Set(28.0f, 29.0f);
+      bd.type = b2_dynamicBody;  /// let it be dynamic i.e it can move
+ 	  bd3.type = b2_dynamicBody;
+      b2Body* body = m_world->CreateBody(&bd);/// create a b2Body* variable body which Refers to the platform.
+      b2Body* body3 = m_world->CreateBody(&bd3);
+      b2FixtureDef *fd = new b2FixtureDef; /// define a fixture fd 
+      b2FixtureDef *fd2 = new b2FixtureDef; /// define a fixture fd 
+      fd->density = 10.0f;/// set its density as 1
+      fd2->density = 40.0f;
+      fd->shape = new b2PolygonShape;
+	  fd2->shape = new b2PolygonShape;
+      fd->shape = &shape; /// set shape member of fd to the shape variable defined above 
+	  fd2->shape = &shape2;
+      body->CreateFixture(fd);/// add fixture fd to body
+	  body3->CreateFixture(fd2);
+
+  //    b2PolygonShape shape2;
+   //   shape2.SetAsBox(0.2f, 2.0f);///<br> define a 0.4 X 4 rectangular shape called shape2 (b2PolygonShape type)
+      /** define a b2BodyDef variable bd2 which will be used to create another body for the pivot/hinge of the platform*/
+      b2BodyDef bd2;
+      bd2.position.Set(25.0f, 28.0f);/// set its position as (14,16)
+      b2Body* body2 = m_world->CreateBody(&bd2);/// body2 is of b2Body* type. Refers to a dummy body created for the hinge.
+
+      b2RevoluteJointDef jointDef;///<br> create a  revolute (revolving) joint definition called jointDef
+      jointDef.bodyA = body;/// its first body is body
+      jointDef.bodyB = body2;/// its second body is body2
+      jointDef.localAnchorA.Set(0,0);/// set the anchor for body as (0,0) wrt itself
+      jointDef.localAnchorB.Set(0,0);/// set the anchor for body2 as (0,0) wrt itself
+      jointDef.collideConnected = false;/// disallow collision 
+      m_world->CreateJoint(&jointDef);/// create the joint using jointDef
+    }
+
+    
+    //Creating wedges at the lower right corner for the see-saws
+    
+    for(int a = 0; a <= 4; a++)
+    {
+
+    see_saw_create( 4 + a*6, 8 , 2.85 , 0.1);
+    
+  	b2Body* spherebody;
+	b2CircleShape circle;
+	circle.m_radius = 0.7;
+	b2FixtureDef ballfd;
+    ballfd.shape = &circle;
+    ballfd.density = 2.0f;
+    ballfd.friction = 0.1f;
+    ballfd.restitution = 0.0f;
+    b2BodyDef ballbd;
+	ballbd.type = b2_dynamicBody;
+	ballbd.position.Set(7 + a*6,14);
+	spherebody = m_world->CreateBody(&ballbd);
+	spherebody->CreateFixture(&ballfd);
+    
+    
+    b2PolygonShape shape, shape2;  
+    shape.SetAsBox(0.3f, 0.3f);///<br> define a 4.4 X 0.4 rectangular shape called shape (b2PolygonShape type)
+	
+    b2BodyDef bd; /// define a b2BodyDef variable bd which will be used to create the platform 
+    bd.position.Set(7 + a*6, 12.0f);/// set its position as (14,14)
+    bd.type = b2_dynamicBody;  /// let it be dynamic i.e it can move
+    b2Body* body = m_world->CreateBody(&bd);/// create a b2Body* variable body which Refers to the platform.
+    b2FixtureDef *fd = new b2FixtureDef; /// define a fixture fd 
+    fd->density = 10.0f;/// set its density as 1
+    fd->shape = new b2PolygonShape;
+    fd->shape = &shape; /// set shape member of fd to the shape variable defined above 
+    body->CreateFixture(fd);/// add fixture fd to body
+
+    
+    b2BodyDef bd2;
+    bd2.position.Set(7 + a*6, 12.0f);/// set its position as (14,16)
+    b2Body* body2 = m_world->CreateBody(&bd2);/// body2 is of b2Body* type. Refers to a dummy body created for the hinge.
+
+    b2RevoluteJointDef jointDef;///<br> create a  revolute (revolving) joint definition called jointDef
+    jointDef.bodyA = body;/// its first body is body
+    jointDef.bodyB = body2;/// its second body is body2
+    jointDef.localAnchorA.Set(0,0);/// set the anchor for body as (0,0) wrt itself
+    jointDef.localAnchorB.Set(0,0);/// set the anchor for body2 as (0,0) wrt itself
+    jointDef.collideConnected = false;/// disallow collision 
+    m_world->CreateJoint(&jointDef);/// create the joint using jointDef
+
+ 	}   
+    
+    
   }
 
   sim_t *sim = new sim_t("Dominos", dominos_t::create);

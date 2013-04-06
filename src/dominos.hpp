@@ -34,6 +34,7 @@ namespace cs296
   public:
     
     dominos_t();
+    void see_saw_create(float,float,float,float);
     
     static base_sim_t* create()
     {
