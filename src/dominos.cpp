@@ -404,7 +404,7 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
     {
 	
 	// balls 
-	b2Body* spherebody;
+/*	b2Body* spherebody;
 	b2CircleShape circle;
 	circle.m_radius = 1.0;
 	b2FixtureDef ballfd;
@@ -419,7 +419,7 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
 		ballbd.position.Set(36.0f - 10.0f * i,1.0f );
 		spherebody = m_world->CreateBody(&ballbd);
 		spherebody->CreateFixture(&ballfd);
-	}
+	}*/
 		
 		// test ball 
 //		b2BodyDef ballbd;
@@ -671,6 +671,9 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
 	shape.Set(b2Vec2(-41.0f, 23.5f) , b2Vec2(-25.0f, 23.5f));
     ground->CreateFixture(&shape, 0.0f);/// add a fixture to the body with shape as defined above and having 0 density
 
+	shape.Set(b2Vec2(-41.0f, 23.5f) , b2Vec2(-41.0f, 33.5f));
+	ground->CreateFixture(&shape, 0.0f);
+
     b2PolygonShape shape2, shape3;
     shape2.SetAsBox(2.5, 5);/// create a 0.2 X 2 rectangle called shape (type b2PolygonShape) 
 	shape3.SetAsBox(2.5, 2.5);
@@ -680,7 +683,7 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
     bd2.type = b2_dynamicBody;/// let it be dynamic i.e it can move
     b2Body* body = m_world->CreateBody(&bd2);/// create body ( type  b2Body) using bd2
     b2FixtureDef *fd2 = new b2FixtureDef;/// define a b2FixtureDef* variable fd2 to create a fixture for body
-    fd2->density = 0.0001f;/// set its density to 1
+    fd2->density = 0.00001f;/// set its density to 1
     fd2->shape = new b2PolygonShape;
     fd2->shape = &shape2;/// set its shape to the shape variable defined above
     body->CreateFixture(fd2); /// add the fixture fd2 to body
@@ -688,7 +691,7 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
 	bd2.position.Set( -27.5 , 2.5);
 	b2Body* body2 = m_world->CreateBody(&bd2);
 	body2 = m_world->CreateBody(&bd2);	
-	fd2->density = 0.01f;
+	fd2->density = 0.001f;
 	fd2->shape = &shape3;
 	body2->CreateFixture(fd2);
 	    
@@ -697,8 +700,69 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
 	m_world->CreateJoint(dist);
    
    
+	//Lower Hinged Bars with spheres
+	{
+	
+	
+	for(int cust = 0; cust < 4; cust++)
+	{
+
+     b2Body* b2;
+      {
+	b2PolygonShape shape;
+	shape.SetAsBox(0.25f, 1.5f);
+	  
+	b2BodyDef bd;
+	bd.type = b2_dynamicBody;
+	bd.position.Set(30 - cust*10, 1.5);
+	b2 = m_world->CreateBody(&bd);
+	b2->CreateFixture(&shape, 0.01f);
+      }
+	
+      b2Body* b4;
+      {
+	b2PolygonShape shape;
+	shape.SetAsBox(0.25f, 0.25f);
+	  
+	b2BodyDef bd;
+	bd.position.Set(30 - cust*10, 3);
+	b4 = m_world->CreateBody(&bd);
+	b4->CreateFixture(&shape, 0.01f);
+      }
+	
+    b2RevoluteJointDef jointDef;///<br> create a  revolute (revolving) joint definition called jointDef
+    jointDef.bodyA = b2;/// its first body is body
+    jointDef.bodyB = b4;/// its second body is body2
+    jointDef.localAnchorA.Set(0,1.5);/// set the anchor for body as (0,0) wrt itself
+    jointDef.localAnchorB.Set(0,0);/// set the anchor for body2 as (0,0) wrt itself
+    jointDef.collideConnected = false;/// disallow collision 
+    m_world->CreateJoint(&jointDef);/// create the joint using jointDef
+
+	b2Body* spherebody;
+	b2CircleShape circle;
+	circle.m_radius = 1.0;
+	b2FixtureDef ballfd;
+    ballfd.shape = &circle;
+    ballfd.density = 0.1f;
+    ballfd.friction = 0.001f;
+    ballfd.restitution = 0.0f;
+ 	b2BodyDef ballbd;
+    ballbd.type = b2_dynamicBody;
+		
+	ballbd.position.Set(28 - 10 * cust,1.0 );
+	spherebody = m_world->CreateBody(&ballbd);
+	spherebody->CreateFixture(&ballfd);
+
+	  
+	}
+	}   
    
-    
+   
+   
+   
+   
+   
+  	 
   }
 
   sim_t *sim = new sim_t("Dominos", dominos_t::create);
