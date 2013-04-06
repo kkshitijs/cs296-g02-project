@@ -422,12 +422,12 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
 	}
 		
 		// test ball 
-		b2BodyDef ballbd;
-		ballbd.type = b2_dynamicBody;
+//		b2BodyDef ballbd;
+//		ballbd.type = b2_dynamicBody;
 	
-		ballbd.position.Set(2.0f,23.0f );
-		spherebody = m_world->CreateBody(&ballbd);
-		spherebody->CreateFixture(&ballfd);
+//		ballbd.position.Set(2.0f,23.0f );
+//		spherebody = m_world->CreateBody(&ballbd);
+//		spherebody->CreateFixture(&ballfd);
 		
 	
     }
@@ -657,7 +657,47 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
     m_world->CreateJoint(&jointDef);/// create the joint using jointDef
 
  	}   
-    
+
+
+	//Creating the gate structure at left-mid section
+	
+    b2EdgeShape shape;
+    shape.Set(b2Vec2(-41.0f,33.5f) , b2Vec2(-25.0f,33.5f));  
+	
+    b2BodyDef bd;/// b2BodyDef type variable bd which describes the body. It is static
+    b2Body* ground = m_world->CreateBody(&bd);/// create a body (*ground) of type b2Body using bd
+    ground->CreateFixture(&shape, 0.0f);/// add a fixture to the body with shape as defined above and having 0 density
+
+	shape.Set(b2Vec2(-41.0f, 23.5f) , b2Vec2(-25.0f, 23.5f));
+    ground->CreateFixture(&shape, 0.0f);/// add a fixture to the body with shape as defined above and having 0 density
+
+    b2PolygonShape shape2, shape3;
+    shape2.SetAsBox(2.5, 5);/// create a 0.2 X 2 rectangle called shape (type b2PolygonShape) 
+	shape3.SetAsBox(2.5, 2.5);
+	
+    b2BodyDef bd2;/// define a b2BodyDef variable bd2 which will be used to create the plank
+    bd2.position.Set(-27.5 , 28.5);/// let its position be (30,1.5) in world coordinates i.e it touches the upper vertex of wedge.
+    bd2.type = b2_dynamicBody;/// let it be dynamic i.e it can move
+    b2Body* body = m_world->CreateBody(&bd2);/// create body ( type  b2Body) using bd2
+    b2FixtureDef *fd2 = new b2FixtureDef;/// define a b2FixtureDef* variable fd2 to create a fixture for body
+    fd2->density = 0.0001f;/// set its density to 1
+    fd2->shape = new b2PolygonShape;
+    fd2->shape = &shape2;/// set its shape to the shape variable defined above
+    body->CreateFixture(fd2); /// add the fixture fd2 to body
+
+	bd2.position.Set( -27.5 , 2.5);
+	b2Body* body2 = m_world->CreateBody(&bd2);
+	body2 = m_world->CreateBody(&bd2);	
+	fd2->density = 0.01f;
+	fd2->shape = &shape3;
+	body2->CreateFixture(fd2);
+	    
+	b2DistanceJointDef* dist = new b2DistanceJointDef();
+	dist->Initialize(body, body2, body->GetWorldCenter(), body2->GetWorldCenter());
+	m_world->CreateJoint(dist);
+   
+   
+   
     
   }
 
