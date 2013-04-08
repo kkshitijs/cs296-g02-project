@@ -35,7 +35,9 @@ using namespace std;
 
 namespace cs296
 {
-
+/// creates a see saw system which includes a triangular wedge and a bar on top of it.
+/// plank_length and plank_breadth are parameters given to the function which denote half of length and width of the plank.
+/// x_pos and y_pos are parameters which give position of centre of the system.
 void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, float plank_breadth)
 {
 
@@ -145,7 +147,7 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
     }
 
 	/// <br>
-	/// 2. b)<b> The horizontal shelf just below the open box (connected to the pulley near the top)
+	/// 2. b)<b> The horizontal shelf just below the open box (connected to the pulley near the top)</b>
     {
 	/**shape is a line segment (b2Edgeshape) of length 6 with end points (-13.0f,26.0f) and (-7.0f,26.0f)*/
 	b2EdgeShape shape;
