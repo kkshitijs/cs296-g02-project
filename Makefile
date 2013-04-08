@@ -1,26 +1,22 @@
-.SUFFIXES: .cpp .hpp
-
-# Programs
+#Programs
 SHELL 	= bash
 CC     	= g++
-LD	= ld
+CP = cp
+MV = mv
 RM 	= rm
 ECHO	= /bin/echo
-CAT	= cat
 PRINTF	= printf
-SED	= sed
 DOXYGEN = doxygen
-######################################
-# Project Name (generate executable with this name)
-TARGET = cs296_base
 
 # Project Paths
-PROJECT_ROOT=$(HOME)/cs296_base_code
+PROJECT_ROOT=.
 EXTERNAL_ROOT=$(PROJECT_ROOT)/external
 SRCDIR = $(PROJECT_ROOT)/src
 OBJDIR = $(PROJECT_ROOT)/obj
 BINDIR = $(PROJECT_ROOT)/bin
 DOCDIR = $(PROJECT_ROOT)/doc
+DATDIR = $(PROJECT_ROOT)/data
+SPTDIR = $(PROJECT_ROOT)/scripts
 
 # Library Paths
 BOX2D_ROOT=$(EXTERNAL_ROOT)
@@ -31,75 +27,117 @@ GL_ROOT=/usr
 LIBS = -lBox2D -lglui -lglut -lGLU -lGL
 
 # Compiler and Linker flags
-CPPFLAGS =-g -O3 -Wall 
-CPPFLAGS+=-I $(BOX2D_ROOT)/include -I $(GLUI_ROOT)/include
-LDFLAGS+=-L $(BOX2D_ROOT)/lib -L $(GLUI_ROOT)/lib
+CPPFLAGS =-g -pg -Wall 
+CPPFLAGS+=-I -O3 $(BOX2D_ROOT)/include -I $(GLUI_ROOT)/include
+LDFLAGS+=-pg -O3 -L $(BOX2D_ROOT)/lib -L $(GLUI_ROOT)/lib
 
-######################################
-
-NO_COLOR=\e[0m
-OK_COLOR=\e[1;32m
-ERR_COLOR=\e[1;31m
-WARN_COLOR=\e[1;33m
-MESG_COLOR=\e[1;34m
-FILE_COLOR=\e[1;37m
-
-OK_STRING="[OK]"
-ERR_STRING="[ERRORS]"
-WARN_STRING="[WARNINGS]"
-OK_FMT="${OK_COLOR}%30s\n${NO_COLOR}"
-ERR_FMT="${ERR_COLOR}%30s\n${NO_COLOR}"
-WARN_FMT="${WARN_COLOR}%30s\n${NO_COLOR}"
 ######################################
 
 SRCS := $(wildcard $(SRCDIR)/*.cpp)
-INCS := $(wildcard $(SRCDIR)/*.hpp)
 OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+OBJS_WITH_GUI_DISABLED := $(filter-out $(OBJDIR)/main.o, $(OBJS))
+OBJS_WITH_GUI_ENABLED := $(filter-out $(OBJDIR)/main_gui_disabled.o, $(OBJS))
 
+.PHONY: install setup build  exe1 doc profile timimg gen_html_timing report exe2 unbuild clean
 
-.PHONY: all setup doc clean distclean
-
-all: setup $(BINDIR)/$(TARGET)
-
+install: setup build exe1 doc profile timimg gen_html_timing report exe2
+	
 setup:
 	@$(ECHO) "Setting up compilation..."
 	@mkdir -p obj
 	@mkdir -p bin
+	@mkdir -p plots
+		
+exe1 : create_objects
+	@$(CC) -o $(BINDIR)/cs296_exe $(LDFLAGS) $(OBJS_WITH_GUI_DISABLED) $(LIBS)
 
-$(BINDIR)/$(TARGET): $(OBJS)
-	@$(PRINTF) "$(MESG_COLOR)Building executable:$(NO_COLOR) $(FILE_COLOR) %16s$(NO_COLOR)" "$(notdir $@)"
-	@$(CC) -o $@ $(LDFLAGS) $(OBJS) $(LIBS) 2> temp.log || touch temp.err
-	@if test -e temp.err; \
-	then $(PRINTF) $(ERR_FMT) $(ERR_STRING) && $(CAT) temp.log; \
-	elif test -s temp.log; \
-	then $(PRINTF) $(WARN_FMT) $(WARN_STRING) && $(CAT) temp.log; \
-	else $(PRINTF) $(OK_FMT) $(OK_STRING); \
-	fi;
-	@$(RM) -f temp.log temp.err
-
--include -include $(OBJS:.o=.d)
-
-$(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	@$(PRINTF) "$(MESG_COLOR)Compiling: $(NO_COLOR) $(FILE_COLOR) %25s$(NO_COLOR)" "$(notdir $<)"
-	@$(CC) $(CPPFLAGS) -c $< -o $@ -MD 2> temp.log || touch temp.err
-	@if test -e temp.err; \
-	then $(PRINTF) $(ERR_FMT) $(ERR_STRING) && $(CAT) temp.log; \
-	elif test -s temp.log; \
-	then $(PRINTF) $(WARN_FMT) $(WARN_STRING) && $(CAT) temp.log; \
-	else printf "${OK_COLOR}%30s\n${NO_COLOR}" "[OK]"; \
-	fi;
-	@$(RM) -f temp.log temp.err
-
-doc:
+exe2 : create_objects
+	@$(CC) -o $(BINDIR)/cs296_exe $(LDFLAGS) $(OBJS_WITH_GUI_ENABLED) $(LIBS)
+	
+create_objects : build 
+	@$(CC) $(CPPFLAGS) -c $(SRCDIR)/*.cpp
+	@$(MV) *.o	$(OBJDIR)
+	
+doc : exe1
 	@$(ECHO) -n "Generating Doxygen Documentation ...  "
 	@$(RM) -rf doc/html
 	@$(DOXYGEN) $(DOCDIR)/Doxyfile 2 > /dev/null
 	@$(ECHO) "Done"
+		
+build: setup $(EXTERNAL_ROOT)/src/Box2D 
+	@$(ECHO) "Building in Release mode...."
+	@mkdir -p $(EXTERNAL_ROOT)/src/Box2D/build296
+	@cd $(EXTERNAL_ROOT)/src/Box2D/build296/; \
+	cmake -DCMAKE_BUILD_TYPE=Release ../
+	@cd $(EXTERNAL_ROOT)/src/Box2D/build296/; \
+	make
+	@cd $(EXTERNAL_ROOT)/src/Box2D/build296/; \
+	make install
+	@$(ECHO) "Release mode build : Done...."
+	
+$(EXTERNAL_ROOT)/src/Box2D: 
+	@$(ECHO) "Extracting Box2D...."
+	@tar -xf ./external/src/Box2D.tar.gz
+	@mv Box2D $(EXTERNAL_ROOT)/src/
+	@$(ECHO) "Extracted!"
 
+
+profile: exe1
+	@$(BINDIR)/cs296_exe 200000
+	@$(ECHO) "Generating .dat file containing profile data"
+	@gprof $(BINDIR)/cs296_exe gmon.out >g02_release_prof.dat
+	@$(ECHO) "Generating .png file containing call graph"
+	@ cp $(SPTDIR)/gprof2dot.py ./
+	@gprof $(BINDIR)/cs296_exe gmon.out | ./gprof2dot.py | dot -Tpng -o release.png
+	@$(MV) g02_release_prof.dat ./data/
+	@$(MV) release.png ./data/
+	@ rm gprof2dot.py	
+	
+timing : exe1 
+	@cp $(SPTDIR)/g02_gen_csv.py ./
+	@$(ECHO) "Running CSV file script...."
+	@python3 g02_gen_csv.py
+	@cp $(SPTDIR)/g02_gen_plots.py ./
+	@$(ECHO) "Generating the plots...."
+	@python3 g02_gen_plots.py
+	@ rm *.py	
+
+report: profile timing g02_project_report.dvi
+	@$(ECHO) "Converting into pdf...."
+	@dvipdf g02_project_report.dvi g02_project_report.pdf
+	@$(MV) g02_project_report.pdf $(DOCDIR)
+	@$(RM) -rf g02_project_report* *.eps *.bib
+
+g02_project_report.dvi:
+	@cp $(DOCDIR)/g02_project_report.tex ./
+	@cp $(DOCDIR)/*.bib ./
+	@cp $(DOCDIR)/*.eps ./
+	@$(ECHO) "Compiling latex file...."
+	@latex g02_project_report
+	@bibtex g02_project_report
+	@latex g02_project_report
+	@latex g02_project_report
+		
+gen_html_timing : timing
+	@cp $(SPTDIR)/g02_gen_html.py ./
+	@cp $(DOCDIR)/g02_project_report.tex ./
+	@$(ECHO) "Running Tex2Html script...."
+	@python3 g02_gen_html.py
+	@$(MV) g02_timing_report.html ./html
+	@$(RM) *.py *.tex
+	
+	
+unbuild:
+	@$(ECHO) "Removing the build...."
+	@$(RM) -rf $(EXTERNAL_ROOT)/src/Box2D/
+	@$(RM) -rf $(EXTERNAL_ROOT)/include/*
+	@$(RM) -rf $(EXTERNAL_ROOT)/lib/*	
+	@$(ECHO) "Done!"	
+	
 clean:
-	@$(ECHO) -n "Cleaning up..."
-	@$(RM) -rf $(OBJDIR) *~ $(DEPS) $(SRCDIR)/*~
-	@$(ECHO) "Done"
-
-distclean: clean
-	@$(RM) -rf $(BINDIR) $(DOCDIR)/html
+	@$(ECHO) "Cleaning up the files...."
+	@$(RM) -rf $(OBJDIR) $(BINDIR) $(DATDIR)/* *~ $(SRCDIR)/*~ $(DOCDIR)/*pdf $(DOCDIR)/html *.csv *.sh
+	@$(RM) -rf ./plots
+	@$(RM) -rf ./scripts/*~
+	@$(RM) -f *.out
+	@$(ECHO) "Done!"	
