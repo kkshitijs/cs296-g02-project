@@ -89,7 +89,8 @@ profile: exe1
 	@gprof $(BINDIR)/cs296_exe gmon.out >g02_release_prof.dat
 	@$(ECHO) "Generating .png file containing call graph"
 	@ cp $(SPTDIR)/gprof2dot.py ./
-	@gprof $(BINDIR)/cs296_exe gmon.out | python3 gprof2dot.py | dot -Tpng -o release.png
+	@ chmod +x gprof2dot.py
+	@gprof $(BINDIR)/cs296_exe gmon.out | ./gprof2dot.py | dot -Tpng -o release.png
 	@$(MV) g02_release_prof.dat ./data/
 	@$(MV) release.png ./data/
 	@ rm gprof2dot.py	
