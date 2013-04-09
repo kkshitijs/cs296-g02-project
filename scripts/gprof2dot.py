@@ -2933,7 +2933,4 @@ class Main:
 
 if __name__ == '__main__':
     Main().main()
-<<<<<<< HEAD
-=======
 
->>>>>>> 1b8bf2db70a49ffb00417d7ac0872b717a5d60fb

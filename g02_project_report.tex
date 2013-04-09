@@ -128,6 +128,10 @@ The machine required some fine-tuning. That involves routine stuff like position
 
 This was done to substitute the gear that was proposed in the original design. The gear was basically needed just to change the direction of the rolling ball. It seemed cumbersome to add the gear as earlier proposed in its image form. Rather, we decided to compromise on the visual appeal and instead have ended up with a bar hinged at its center. At the start a vertical bar falls on this bar to set it rotating.  When a ball falls on this now rotating bar, its direction is changed to where we want it to go. This is the same functionality that was required of the gear, and works just fine for our purposes. Also, it kind of looks cool!
 
+\subsection{Air Pump Vanishes}
+
+We had considered making an air pump, which would propel a ball in front of it when a load would fall on it. This was another instance of our incomplete knowledge of Box2D at the time of making the design, since we did not know that objects can't change their shape. Also, it was easier to just use the gear hack mentioned above to propel the ball in the required direction.
+ 
 \subsection{Fire Runs Cold}
 
 As noted earlier, our objective was to put out a fire. While it did seem interesting at the time, it soon started to seem a stupid objective. Over time, this final objective underwent many changes. Initially, two images were needed - those of a pail of water and a raging fire. This basically involved falling of a body on another and then changing the images to supposedly `put out a fire'. Currently, the end goal is a more logical and reasonable one - sliding a gate. And, seriously, this looks way better than what we initially had in mind.
@@ -147,13 +151,13 @@ As a result , the average times will go down.
 \item Graph 5 plots the histogram of frequency of different step time values for 16 iterations. There is no clear pattern but when there is heavy load, a bell shaped histogram is obtained.
 \end{itemize}
 
-\section{Profiling the Release-version}
+\section{Profiling using the Release-version}
 
 The profiling was done here following these steps :
 
 \begin{itemize}
 
-\item We built the Box2D library in the \emph{Debug} version, using cmake \emph{-DCMAKE\_BUILD\_TYPE=Release ../}
+\item We built the Box2D library in the \emph{Release} version, using cmake \emph{-DCMAKE\_BUILD\_TYPE=Release ../}
 \item The code was run for 2,00,000 iterations to generate the profile data. 
 \item The optimisation flags \emph{-O3} were used before compiling and linking.
 
@@ -161,10 +165,14 @@ The profiling was done here following these steps :
 
 \subsection{Analyzing Flat-Profile}
 
+<<<<<<< HEAD
 The Release version itself includes optimizations in its build process. Plus, we have also included the optimisation flag \emph{-O3} in the compiling and linking process. This leads to highly efficient code, that runs almost \emph{6 times faster} . There is a listing of \emph{55} functions, of which the most intensive are $\approx 5-10$ only. 
+=======
+The Release version itself includes optimizations in its build process. Plus, we have also included the optimisation flag \emph{-O3} in the compiling and linking process. This leads to highly efficient code. There is a listing of \emph{75} functions, of which the most intensive are $\approx 4-5$ only. 
+>>>>>>> e0a473aee53897d3a82d8f349767f474307703bd
 
 \begin{center}
-\includegraphics[width=195mm, height=60mm]{state_00.eps}\\
+\includegraphics[width=195mm, height=60mm]{profile_data.eps}\\
 \emph{Flat Profile Data for Release-version profiling}
 \end{center}
 
@@ -172,26 +180,30 @@ The following conclusions can be drawn from the flat profile data :
 
 \begin{itemize}
 
-\item Total time taken by the functions : \emph{5.07 seconds}
+\item Total time taken by the functions : \emph{263.66 seconds}
 \item Most intensive functions : 
 \begin{itemize}
 \item \emph{b2ContactSolver::SolveVelocityConstraints()}
 \item \emph{b2ContactSolver::SolvePositionConstraints()}
+\item \emph{b2ContactSolver::InitializeVelocityConstraints()}
 \end{itemize}
 \item Time taken by most intensive functions : 
 \begin{itemize}
-\item \emph{b2ContactSolver::SolveVelocityConstraints()} : \emph{2.36 seconds}
-\item \emph{b2ContactSolver::SolvePositionConstraints()} : \emph{0.31 seconds}
+\item \emph{b2ContactSolver::SolveVelocityConstraints()} : \emph{195.49 seconds}
+\item \emph{b2ContactSolver::SolvePositionConstraints()} : \emph{29.63 seconds}
+\item \emph{b2ContactSolver::InitializeVelocityConstraints()} : \emph{10.55 seconds}
+\end{itemize}
+\item Total time taken by the functions in our simulation is much greater than the time which was obtained by profiling the base code in lab 7. This is a result of greater number of elements in our simulation. As a result, velocities and positions are updated more frequently and it is these functions only which take the maximum amount of time in the simulation. 
 \end{itemize}
 
-\end{itemize}
+Also, when we had run the base code in debug version in lab 7, we had realized that overloaded operators were being called millions of times , generating large overheads. Constructor for b2Vec2 was also called large number of times which could be optimized by declaring the object outside a loop and not initializing it in every iteration of the loop. But since we are running in Release mode and using the optimization flags, these things have been taken care of. 
 
 \subsection{Analyzing Call-Graph}
 
-The call graph for the Release-version profiling is totally horizontal, indicating that the child functions have been placed \emph{inline}. This is just the optimisations that we had talked about in the earlier section. This turns out to be quite an efficient implementation, since it removes all the interconnections between the different functions, and leads to a highly structured and layered function call pattern.
+The call graph for the Release-version profiling is totally horizontal, indicating that the child functions have been placed \emph{inline}.  This turns out to be quite an efficient implementation, since it removes all the interconnections between the different functions, and leads to a highly structured and layered function call pattern.
 
 \begin{center}
-\includegraphics[width=195mm, height=30mm]{state_00.eps}\\
+\includegraphics[width=195mm, height=30mm]{call_graph.eps}\\
 \emph{Cropped Call Graph for Release-version profiling}
 \end{center}
 

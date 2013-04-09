@@ -5,7 +5,6 @@ CP = cp
 MV = mv
 RM 	= rm
 ECHO	= /bin/echo
-PRINTF	= printf
 DOXYGEN = doxygen
 
 # Project Paths
@@ -27,8 +26,8 @@ GL_ROOT=/usr
 LIBS = -lBox2D -lglui -lglut -lGLU -lGL
 
 # Compiler and Linker flags
-CPPFLAGS =-g -pg -Wall 
-CPPFLAGS+=-I $(BOX2D_ROOT)/include -I $(GLUI_ROOT)/include -O3 
+CPPFLAGS =-g -pg -O3 -Wall 
+CPPFLAGS+=-I  $(BOX2D_ROOT)/include -I $(GLUI_ROOT)/include
 LDFLAGS+=-pg -O3 -L $(BOX2D_ROOT)/lib -L $(GLUI_ROOT)/lib
 
 ######################################
@@ -38,7 +37,7 @@ OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 OBJS_WITH_GUI_DISABLED := $(filter-out $(OBJDIR)/main.o, $(OBJS))
 OBJS_WITH_GUI_ENABLED := $(filter-out $(OBJDIR)/main_gui_disabled.o, $(OBJS))
 
-.PHONY: install setup build  exe1 doc profile timimg gen_html_timing report exe2 unbuild clean
+.PHONY: install setup build  exe1 doc profile timimg gen_html_timing report exe2 unbuild clean dist
 
 install: setup build exe1 doc profile timimg gen_html_timing report exe2
 	
@@ -47,6 +46,7 @@ setup:
 	@mkdir -p obj
 	@mkdir -p bin
 	@mkdir -p plots
+	@mkdir -p data
 		
 exe1 : create_objects
 	@$(CC) -o $(BINDIR)/cs296_exe $(LDFLAGS) $(OBJS_WITH_GUI_DISABLED) $(LIBS)
@@ -83,11 +83,13 @@ $(EXTERNAL_ROOT)/src/Box2D:
 
 
 profile: exe1
+	@$(ECHO) "Running the code for profiling" 
 	@$(BINDIR)/cs296_exe 200000
 	@$(ECHO) "Generating .dat file containing profile data"
 	@gprof $(BINDIR)/cs296_exe gmon.out >g02_release_prof.dat
 	@$(ECHO) "Generating .png file containing call graph"
 	@ cp $(SPTDIR)/gprof2dot.py ./
+	@ chmod +x gprof2dot.py
 	@gprof $(BINDIR)/cs296_exe gmon.out | ./gprof2dot.py | dot -Tpng -o release.png
 	@$(MV) g02_release_prof.dat ./data/
 	@$(MV) release.png ./data/
@@ -126,6 +128,9 @@ gen_html_timing : timing
 	@$(MV) g02_timing_report.html ./html
 	@$(RM) *.py *.tex
 	
+dist : unbuild 
+	cd ..;\
+	tar cvfz cs296_g02_project cs296_g02_project.tar.gz
 	
 unbuild:
 	@$(ECHO) "Removing the build...."
