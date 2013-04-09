@@ -28,7 +28,7 @@ LIBS = -lBox2D -lglui -lglut -lGLU -lGL
 
 # Compiler and Linker flags
 CPPFLAGS =-g -pg -Wall 
-CPPFLAGS+=-I -O3 $(BOX2D_ROOT)/include -I $(GLUI_ROOT)/include
+CPPFLAGS+=-I $(BOX2D_ROOT)/include -I $(GLUI_ROOT)/include -O3 
 LDFLAGS+=-pg -O3 -L $(BOX2D_ROOT)/lib -L $(GLUI_ROOT)/lib
 
 ######################################

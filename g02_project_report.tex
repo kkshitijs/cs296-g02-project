@@ -39,7 +39,7 @@ sahil@cse.iitb.ac.in
 We have designed a machine that goes through a sequence of processes to end up performing a simple task - ``Sliding a Gate". A pendulum starts off by toppling dominos that roll a ball on a pulley that enables a see-saw to throw a ball on unstable dominos that goes through a sequence of see-saws and hinges that ends up sliding a gate. Of course, you may ask why not just slide the gate? But that is just what a Rube Goldberg Machine is. As per Wikipedia,
 
 \begin{quote}
-A Rube Goldberg machine is a deliberately over-engineered or overdone machine that performs a very simple task in a very complex fashion, usually including a chain reaction. 
+A Rube Goldberg machine is a deliberately over-engineered or overdone machine that performs a very simple task in a very complex fashion, usually including a chain reaction.$^{\cite{wiki_rube}}$ 
 \end{quote}
 
 \section{Origin}
@@ -51,7 +51,7 @@ It all started way back in January 2013 when we had to first think of a design t
 \emph{Original Proposed Design of Rube Goldberg}
 \end{center}
 
-We saw a couple of videos on \emph{YouTube} regarding usage of Box2D and also glanced across the Box2D Manual to understand what could be done in this environment. Of course, as we later found out, there were a few changes that had to be made in our initial design to be able to adapt it seamlessly to Box2D GUI. This lead to revisions and evolutions in the design, which we talk of in the next section.
+We saw a couple of videos on \emph{YouTube} regarding usage of Box2D and also glanced across the Box2D Manual$^{\cite{box_manual}}$ to understand what could be done in this environment. Of course, as we later found out, there were a few changes that had to be made in our initial design to be able to adapt it seamlessly to Box2D GUI. This lead to revisions and evolutions in the design, which we talk of in the next section.
 
 \section{The Present State}
 
@@ -119,7 +119,7 @@ Unique things are quite interesting, aren't they? Well, here is some interesting
 \item The \textbf{\emph{Linked See-Saw}} system is a nice element in the design. Here the imbalance of one see-saw leads to imbalance of a neighbouring see-saw which happens till 4 steps finally leading to a ball rolling off. This is quite elegant and is definitely one of the high-points of the simulation.
 \item Another one is the \textbf{\emph{Hinged Bars and Balls}} system which, thanks to the manipulation of densities of the bar and the ball, leads the observer to the illusion that energy is being created. The balls suddenly seem to pick up speed. Obviously, no external force is given at this stage and it is a sight to behold. Also, it helps us later since the speed is needed to slide the gate.
 \item The \textbf{\emph{Shaky Dominos}} is a nice concept since it allows us to break a sequential process into two sequential processes that happen simultaneously. The dominos have been arranged such that one of them falls to the left leading to some processes, while the other one falls to the right simultaneously triggering the linked see-saws.
-\item We personally prefer the \textbf{\emph{Sliding Gate}}. That has been created by putting a rectangular body among frames, and then connecting it through a \emph{Distance Joint} with a \emph{denser} body kept below on the ground. The movement of that body leads to the final sliding of the gate.
+\item We prefer the \textbf{\emph{Sliding Gate}} personally. That has been created by putting a rectangular body among frames, and then connecting it through a \emph{Distance Joint} with a \emph{denser} body kept below on the ground. The movement of that body leads to the final sliding of the gate.
 \end{itemize}
 
 The machine required some fine-tuning. That involves routine stuff like positioning elements correctly and triggering them at the right time. But there are a few points that we would like to bring to the notice.
@@ -135,7 +135,7 @@ As noted earlier, our objective was to put out a fire. While it did seem interes
 \section{Timing Analysis}
 
 Timing analysis is a key part of any project. It is a good indicator of the efficiency of the written code. So, here we have generated 
-different plots and present an analysis based on them.
+different plots using \emph{Matplotlib}$^{\cite{matplotlib_manual}}$ and present an analysis based on them.
 
 \subsection{Results from the graphs generated}
 
@@ -161,7 +161,7 @@ The profiling was done here following these steps :
 
 \subsection{Analyzing Flat-Profile}
 
-The Release version itself includes optimizations in its build process. Plus, we have also included the optimisation flag \emph{-O3} in the compiling and linking process. This leads to highly efficient code, that runs almost \emph{6 times faster}. There is a listing of \emph{55} functions, of which the most intensive are $\approx 5-10$ only. 
+The Release version itself includes optimizations in its build process. Plus, we have also included the optimisation flag \emph{-O3} in the compiling and linking process. This leads to highly efficient code, that runs almost \emph{6 times faster} . There is a listing of \emph{55} functions, of which the most intensive are $\approx 5-10$ only. 
 
 \begin{center}
 \includegraphics[width=195mm, height=60mm]{state_00.eps}\\
@@ -213,5 +213,8 @@ Here we present the snapshots of the Rube Goldberg Design at its various stages.
 \emph{Stages of the Simulation}
 \label{Fig. : Stages of the Simulation}
 \end{figure}
+
+\bibliographystyle{plain}
+\bibliography{refs}
 
 \end{document}
