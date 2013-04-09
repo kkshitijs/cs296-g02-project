@@ -36,20 +36,22 @@ sahil@cse.iitb.ac.in
 %Sections start here
 \section{Introduction}
 
-We have designed a machine that goes through a sequence of processes to end up performing a simple task - "Sliding a Gate". A pendulum starts off by toppling dominos that roll a ball on a pulley that enables a see-saw to throw a ball on unstable dominos that goes through a sequence of see-saws and hinges that ends up sliding a gate. Of course, you may ask why not just slide the gate? But that is just what a Rude Goldberg Machine is. As per Wikipedia,
+We have designed a machine that goes through a sequence of processes to end up performing a simple task - ``Sliding a Gate". A pendulum starts off by toppling dominos that roll a ball on a pulley that enables a see-saw to throw a ball on unstable dominos that goes through a sequence of see-saws and hinges that ends up sliding a gate. Of course, you may ask why not just slide the gate? But that is just what a Rube Goldberg Machine is. As per Wikipedia,
 
+\begin{quote}
 A Rube Goldberg machine is a deliberately over-engineered or overdone machine that performs a very simple task in a very complex fashion, usually including a chain reaction. 
+\end{quote}
 
 \section{Origin}
 
-It all started way back in January 2013 when we had to first think of a design to implement as a course project. We were naive back then and thought of making a complicated machine. A sequence of processes will lead to a final goal, which we set as "Putting Out A Fire". The initially proposed design looked like this.
+It all started way back in January 2013 when we had to first think of a design to implement as a course project. We were naive back then and thought of making a complicated machine. A sequence of processes will lead to a final goal, which we set as ``Putting Out A Fire". The initially proposed design looked like this.
 
 \begin{center}
-\includegraphics[width=180mm, height=120mm]{RubeGoldberg.eps}\\
-\label{Fig. : Original Proposed Design of Rube Goldberg}
+\includegraphics[width=160mm, height=100mm]{RubeGoldberg.eps}\\
+\emph{Original Proposed Design of Rube Goldberg}
 \end{center}
 
-Of course, as we later found out, there were a few changes that had to be made in the design to adapt it to the Box2D environment. More on that in the next section.
+We saw a couple of videos on \emph{YouTube} regarding usage of Box2D and also glanced across the Box2D Manual to understand what could be done in this environment. Of course, as we later found out, there were a few changes that had to be made in our initial design to be able to adapt it seamlessly to Box2D GUI. This lead to revisions and evolutions in the design, which we talk of in the next section.
 
 \section{The Present State}
 
@@ -57,10 +59,10 @@ Currently, our design looks slightly different. A snapshot of the initial state 
 
 \begin{center}
 \includegraphics[width=160mm, height=120mm]{state_00.eps}\\
-\label{Fig. : State of Machine before Start}
+\emph{State of Machine before Start}
 \end{center}
 
-The machine includes the following elements:
+You would have noticed that the word \emph{slightly} is quite apt, since the design is still a derivative of the original one. Our machine includes the following elements:
 
 \begin{itemize}
 
@@ -107,28 +109,28 @@ The machine includes the following elements:
 
 \end{itemize}
 
-This brings us to the question what makes this design interesting. Read on!
+I know that sounded a bit woozy. For a graphical understanding of how our machine works, refer to the section \textbf{A Thousand Words} for stage-wise simulation snapshots. Now that you understand what constitutes the design, let us see what really makes this appealing to the observer.
 
 \section{Unique is Interesting}
 
-Unique things are quite interesting, aren't they? Well, here is some the interesting stuff about our design:
+Unique things are quite interesting, aren't they? Well, here is some interesting(and, I daresay, \emph{unique}) stuff about our design.
 
-\begin {itemize}
-\item The \emph{Linked See-Saw} system is a nice element in the design. Here the ball from one see-saw falls on a neighbouring see-saw which happens till 4 steps finally leading to a ball rolling off. This is quite elegant and is definitely one of the high-points of the simulation.
-\item Another one is the \emph{Hinged Bars and Balls} system which, thanks to the manipulation of densities of the bar and the ball, leads the observer to the illusion that energy is being created. The balls suddenly seem to pick up speed. Obviously, no external force is given at this stage and it creates an interesting thing to watch. Also, it helps us later since the speed is needed to slide the gate.
-\item The \emph{Shaky Dominos} is a nice concept since it allows us to break a sequential process into two sequential processes that heppen simultaneously. The dominos have been arranged such that one of them falls to the left leading to some processes, while the other one falls to the right simultaneously triggering the linked see-saws.
-\item We personally prefer the \emph{Sliding Gate}. That has been created by putting a rectangular body among frames, and then connecting it through a \emph{Distance Joint} with a \emph{denser} body kept below on the ground. The movement of that body leads to the final sliding of the gate.
+\begin{itemize}
+\item The \textbf{\emph{Linked See-Saw}} system is a nice element in the design. Here the imbalance of one see-saw leads to imbalance of a neighbouring see-saw which happens till 4 steps finally leading to a ball rolling off. This is quite elegant and is definitely one of the high-points of the simulation.
+\item Another one is the \textbf{\emph{Hinged Bars and Balls}} system which, thanks to the manipulation of densities of the bar and the ball, leads the observer to the illusion that energy is being created. The balls suddenly seem to pick up speed. Obviously, no external force is given at this stage and it is a sight to behold. Also, it helps us later since the speed is needed to slide the gate.
+\item The \textbf{\emph{Shaky Dominos}} is a nice concept since it allows us to break a sequential process into two sequential processes that happen simultaneously. The dominos have been arranged such that one of them falls to the left leading to some processes, while the other one falls to the right simultaneously triggering the linked see-saws.
+\item We personally prefer the \textbf{\emph{Sliding Gate}}. That has been created by putting a rectangular body among frames, and then connecting it through a \emph{Distance Joint} with a \emph{denser} body kept below on the ground. The movement of that body leads to the final sliding of the gate.
 \end{itemize}
 
 The machine required some fine-tuning. That involves routine stuff like positioning elements correctly and triggering them at the right time. But there are a few points that we would like to bring to the notice.
 
 \subsection{The Gear Hack}
 
-This was done to substitute the gear that was proposed in the original design. The gear was basically needed just to change the direction of the rolling ball. It seemed cumbersome to add the gear as earlier proposed in its image form. Rather, we decided to compromise on the visual appeal and instead have ended up with a bar hinged at its center. At the start a vertical bar falls on this bar to set it rotating.  When a ball falls on this now rotating bar, its direction is changed to where we want it to go. This is the same functionality that was required of the gear, and works just fine for our purposes. Also, it kind of looks cool.
+This was done to substitute the gear that was proposed in the original design. The gear was basically needed just to change the direction of the rolling ball. It seemed cumbersome to add the gear as earlier proposed in its image form. Rather, we decided to compromise on the visual appeal and instead have ended up with a bar hinged at its center. At the start a vertical bar falls on this bar to set it rotating.  When a ball falls on this now rotating bar, its direction is changed to where we want it to go. This is the same functionality that was required of the gear, and works just fine for our purposes. Also, it kind of looks cool!
 
 \subsection{Fire Runs Cold}
 
-As noted earlier, our objective was to put out a fire. While it did seem interesting at that time, it soon started to seem a stupid thing to do with a Rube Goldberg Machine. Over time, this final objective underwent many changes. Initially, two images were needed - those of a pail of water and a raging fire. This basically involved falling of a body on another. Now, at the end, the objective has been modified to a more logical and reasonable one - sliding of a gate. And, seriously, this looks way better than what we had initially in mind.
+As noted earlier, our objective was to put out a fire. While it did seem interesting at the time, it soon started to seem a stupid objective. Over time, this final objective underwent many changes. Initially, two images were needed - those of a pail of water and a raging fire. This basically involved falling of a body on another and then changing the images to supposedly `put out a fire'. Currently, the end goal is a more logical and reasonable one - sliding a gate. And, seriously, this looks way better than what we initially had in mind.
 
 \section{Timing Analysis}
 
@@ -163,7 +165,7 @@ The Release version itself includes optimizations in its build process. Plus, we
 
 \begin{center}
 \includegraphics[width=195mm, height=60mm]{state_00.eps}\\
-\emph{Fig. 3 : Flat Profile Data for Release-version profiling}
+\emph{Flat Profile Data for Release-version profiling}
 \end{center}
 
 The following conclusions can be drawn from the flat profile data :
@@ -190,11 +192,8 @@ The call graph for the Release-version profiling is totally horizontal, indicati
 
 \begin{center}
 \includegraphics[width=195mm, height=30mm]{state_00.eps}\\
-\emph{Fig. 4 : Cropped Call Graph for Release-version profiling}
+\emph{Cropped Call Graph for Release-version profiling}
 \end{center}
-
-
-
 
 
 \section{A Thousand Words}
@@ -203,15 +202,15 @@ Here we present the snapshots of the Rube Goldberg Design at its various stages.
 
 \begin{figure}
 \centering
-\subfloat[Fig. : Stage 1]{\includegraphics[width=70mm, height=50mm]{state_01.eps}}
-\subfloat[Fig. : Stage 2]{\includegraphics[width=70mm, height=50mm]{state_02.eps}}\\
-\subfloat[Fig. : Stage 3]{\includegraphics[width=70mm, height=50mm]{state_03.eps}}
-\subfloat[Fig. : Stage 4]{\includegraphics[width=70mm, height=50mm]{state_04.eps}}\\
-\subfloat[Fig. : Stage 5]{\includegraphics[width=70mm, height=50mm]{state_05.eps}}
-\subfloat[Fig. : Stage 6]{\includegraphics[width=70mm, height=50mm]{state_06.eps}}\\
-\subfloat[Fig. : Stage 7]{\includegraphics[width=70mm, height=50mm]{state_07.eps}}
-\subfloat[Fig. : Stage 8]{\includegraphics[width=70mm, height=50mm]{state_08.eps}}\\
-\caption{The States}
+\subfloat[Stage 1]{\includegraphics[width=70mm, height=50mm]{state_01.eps}}
+\subfloat[Stage 2]{\includegraphics[width=70mm, height=50mm]{state_02.eps}}\\
+\subfloat[Stage 3]{\includegraphics[width=70mm, height=50mm]{state_03.eps}}
+\subfloat[Stage 4]{\includegraphics[width=70mm, height=50mm]{state_04.eps}}\\
+\subfloat[Stage 5]{\includegraphics[width=70mm, height=50mm]{state_05.eps}}
+\subfloat[Stage 6]{\includegraphics[width=70mm, height=50mm]{state_06.eps}}\\
+\subfloat[Stage 7]{\includegraphics[width=70mm, height=50mm]{state_07.eps}}
+\subfloat[Stage 8]{\includegraphics[width=70mm, height=50mm]{state_08.eps}}\\
+\emph{Stages of the Simulation}
 \label{Fig. : Stages of the Simulation}
 \end{figure}
 
