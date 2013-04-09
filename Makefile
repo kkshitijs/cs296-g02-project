@@ -93,7 +93,7 @@ profile: exe1
 	@gprof $(BINDIR)/cs296_exe gmon.out | ./gprof2dot.py | dot -Tpng -o release.png
 	@$(MV) g02_release_prof.dat ./data/
 	@$(MV) release.png ./data/
-	@ rm gprof2dot.py	
+	@ rm gprof2dot.py gmon.out	
 	
 timing : exe1 
 	@cp $(SPTDIR)/g02_gen_csv.py ./

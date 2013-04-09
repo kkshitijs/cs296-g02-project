@@ -23,3 +23,8 @@ html
 		color:#ffffff;
 		text-align: center;
 	}
+	img
+	{
+		width:700px;
+		height:500px;
+	}

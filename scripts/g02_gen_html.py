@@ -5,8 +5,8 @@ import re
 
 #Custom defined list of tags in Latex
 
-latex_tags = [ "\\" , "\\_" , "\\emph" , "\\textbf"]
-html_tags = [ " ", " " , "<em>" , "<b>"]
+latex_tags = [ "\\" , "\\_" , "\\emph" , "\\textbf" , "\\textbf{\\emph"]
+html_tags = [ " ", " " , "<em>" , "<b>" , "<b><em>"]
 margin_top = ""
 margin_left = ""
 margin_right = ""
@@ -15,6 +15,107 @@ author = []
 roll_no = []
 email_id = []
 a = -1
+
+#Function to handle inline $s
+def dollar_handler(line):
+
+#	print("LINE IS--------", line)
+	match = re.search("$(.*?)$", line)
+	if match:
+		word = match.group(1)
+#		print("WORD IS-",word, "----")
+		if word == "":
+			return line
+		if word[0:7] != "\\approx":
+			match = re.search("(.*)$(.*)$(.*)", line)
+			line = ""
+			line += match.group(1)
+			line += match.group(3)
+		else:
+			match = re.search("(.*)$(.*)$(.*)", line)
+			line = ""
+			line += match.group(1)
+			line += "~"
+			line += word[7:-1]
+			line += match.group(3)
+	
+	return line				
+
+#Function to handle images in the tex file
+def image_handler(html_file, line):
+
+	img = ""
+	width = 0
+	height = 0
+	match = re.search("(.*)width=(.*)mm(.*)height=(.*)mm(.*){(.*).eps}" , line)
+	if match:
+		img = match.group(6)
+		width = int(match.group(2))
+		height = int(match.group(4))
+	html_file.write("""<figure><img src="{0}.png" width="{1}" height="{2}"></figure>""".format(img, width*3, height*3))
+	
+#Function to handle lists in the tex file
+def list_handler(tex_file, html_file, line):
+
+	html_file.write("<ul>\n")
+	while True:
+		line = tex_file.readline()
+		line = ignore(html_file, line)
+		
+		if line[0:16] == "\\includegraphics":
+			image_handler(html_file, line)
+			line = tex_file.readline()
+		if line[0:4] == "\\end":
+			break
+		if line[0:6] == "\\begin":
+			match = re.search("begin{(.*)}" , line)
+			if match:
+				if match.group(1) == "itemize":
+					list_handler(tex_file, html_file, line)
+				elif match.group(1) == "center":
+					quote_center_handler(tex_file, html_file, line, "center")	
+				elif match.group(1) == "quote":
+					quote_center_handler(tex_file, html_file, line, "quote")	
+		match = re.search("\\item (.*)" , line)	
+		if match:
+			html_syntax = tag_replace(match.group(1))
+			html_file.write("<li>")
+			html_file.write(html_syntax)
+			html_file.write("</li>\n")
+
+	html_file.write("</ul>\n")	
+
+#Function to handle quotes from tex file
+def quote_center_handler(tex_file, html_file, line, tag):
+
+	if tag=="center":
+		html_file.write("<center>\n")
+	elif tag=="quote":
+		html_file.write("<br><br><i>\n")	
+	while True:
+		line = tex_file.readline()
+		line = ignore(html_file, line)
+		if line[0:16] == "\\includegraphics":
+			image_handler(html_file, line)
+			line = tex_file.readline()
+		if line[0:4] == "\\end":
+			break
+		if line[0:6] == "\\begin":
+			match = re.search("begin{(.*)}" , line)
+			if match:
+				if match.group(1) == "itemize":
+					list_handler(tex_file, html_file, line)
+				elif match.group(1) == "center":
+					quote_center_handler(tex_file, html_file, line, "center")	
+				elif match.group(1) == "quote":
+					quote_center_handler(tex_file, html_file, line, "quote")	
+		html_syntax = tag_replace(line)
+		html_file.write(html_syntax)
+			
+	if tag=="center":
+		html_file.write("</center>\n")
+	elif tag=="quote":
+		html_file.write("</i>\n")
 
 #Function to ignore the comments and empty new lines
 def ignore(html_file, line):
@@ -33,10 +134,24 @@ def ignore(html_file, line):
 #This function takes a word and recognises whether this is a special tag in Latex
 def tag_replace(string):
 
+#	while string[0] == " ":
+#		string = string[1:]
+	
 	word_list = string.split(' ')
+#	print(word_list[-1])
+#	if word_list[-1] != "" and word_list[-1][-1] == '\n':
+#		word_list[-1] == word_list[-1][:-2]
+#		print("CHANGED----------", word_list[-1])
 #	print(word_list)
 	html_syntax = " "
 	for word in word_list:
+		if word == '':
+			continue
+		if word[-1] == '\n':
+			word = word[:-1]
+		if word == '':
+			continue
+
 		if word[0] == '\\':
 #			print("word[0] is---------" , word[0] , "for" , word)
 
@@ -49,10 +164,13 @@ def tag_replace(string):
 #				print("---------------" , match.group(1))
 				index = latex_tags.index(match.group(1))
 				replaced += html_tags[index]
-				match = re.search(".*{(.*)}" , word)
+				match = re.search(".*{(.*)" , word)
 				if match:
+#					print("#########---------------" , match.group())
+#					print("#########---------------" , match.group(1))
 					replaced += match.group(1)
 					if match.group()[-1] == '}':
+						a=""
 #						temp = html_tags[index]
 						replaced += invert(html_tags[index])
 					else:
@@ -65,6 +183,17 @@ def tag_replace(string):
 		elif word[-1] == '}':
 #			print("temp is now" , temp)
 			if temp != "":
+#				print("^^^^^^^^^^^^^^---------------" , word)
+#				print("^^^^^^^^^^^^^^---------------" , word[:-1])
+				while word[-1] == '}':
+					word = word[:-1]
+				if word[-1] == '$':
+					word = word[:-1]
+					while word[-1] != '$':
+						word = word[:-1]
+					word = word[:-1]					
+				html_syntax += word
+				html_syntax += " "		
 				html_syntax += invert(temp)
 			
 		else:
@@ -84,6 +213,7 @@ def replace(word):
 #		print("---------------" , match.group(1))
 		index = latex_tags.index(match.group(1))
 		replaced += html_tags[index]
+		
 		match = re.search(".*{(.*)}" , word)
 		if match:
 			replaced += match.group(1)
@@ -91,7 +221,7 @@ def replace(word):
 		else:
 			match = re.search(".*{(.*)" , word)
 			replaced += match.group(1)
-			replaced += invert(html_tags[index])
+#			replaced += invert(html_tags[index])
 	return replaced
 
 #Searches and replaces tags in tags in the latex code, to corresponding html code
@@ -118,9 +248,13 @@ def tag_in_tag_search(word):
 def invert(html_tag):
 
 	inverted = ""
-	inverted += html_tag[0]
-	inverted += "/"
-	inverted += html_tag[1:]
+	for i in range(len(html_tag)):
+		if(html_tag[i] == '<'):
+			inverted += "</"
+		elif(html_tag[i] == '>'):
+			inverted += ">"	
+		else:
+			inverted += html_tag[i]	
 	return inverted
 					
 #This function pre-processes the html file to generate the required syntax
@@ -129,7 +263,7 @@ def pre_process(f):
 	f.write("<!DOCTYPE html>\n")
 	f.write("<html>\n")
 	f.write("<head>\n")
-	f.write("<title> Timing Analysis </title>\n")
+	f.write("<title> Profiling Report </title>\n")
 	f.write('''<style type="text/css">\n''')
 	f.write('''body {color:black; font-family:arial; font-size:18px; background-color:lavender}\n''')
 	f.write("</style>")
@@ -154,23 +288,43 @@ print("Opened File!")
 
 line = ""
 start_writing = 0
+new_sect = 0
 while True:
 
-	line = tex_file.readline()
+	if new_sect == 1:
+		new_sect = 0
+	elif new_sect == 0:
+		line = tex_file.readline()
+
+#	line = dollar_handler(line)
+
+	if line[0:16] == "\\includegraphics":
+		image_handler(html_file, line)
+		line = tex_file.readline()
+		print("TAKING IN-----" , line)
+	
+
 	if len(line) == 0:
+#		print("GOING OUT OF LOOP")
 		break
 	
 #Ignoring comments here	
-	if line[0:1] == "%":
+	elif line[0:1] == "%":
 #		print("Ignored ", line)
 		continue
 	
-	if line[0:8] == "\\section":
+	elif line[0:8] == "\\section":
 		start_writing = 1
 		match = re.search("section{(.*)}", line)
 		if match:
 #			print("Writing", match.group(1))
-			if ((match.group(1)).split(' '))[0] == "Profiling":
+			if ((match.group(1)).split(' '))[0] == "Timing":
+				line = tex_file.readline()
+				while not(line[0:8] == "\\section"):
+					line = tex_file.readline()
+					new_sect = 1
+				continue	
+			if ((match.group(1)).split(' '))[0] == "A" and ((match.group(1)).split(' '))[1] == "Thousand":
 				break
 			html_syntax = tag_replace(match.group(1))
 			html_file.write("<h1>")
@@ -179,7 +333,7 @@ while True:
 		html_file.write("</center></u></h1>\n")
 		continue
 		
-	if line[0:11] == "\\subsection":
+	elif line[0:11] == "\\subsection":
 		start_writing = 1
 		html_file.write("<h2>")
 		match = re.search("section{(.*)}", line)
@@ -191,49 +345,28 @@ while True:
 #		html_file.write("<hr>\n")
 		continue
 	
-	if line[0:6] == "\\begin":
+	elif line[0:6] == "\\begin":
 		start_writing = 1
 		match = re.search("begin{(.*)}" , line)
 		if match:
 #			print("Found for BEGIN" , match.group(1))
 			if match.group(1) == "itemize":
 				
-				html_file.write("<ul>\n")
-				while True:
-#					plot_no += 1
-					a += 1
-					line = tex_file.readline()
-					line = ignore(html_file, line)
-					if line[0:4] == "\\end":
-						break
-					match = re.search("\\item (.*)" , line)	
-					if match:
-						html_syntax = tag_replace(match.group(1))
-						html_file.write("<li>")
-						html_file.write(html_syntax)
-						html_file.write("</li>\n")
-						if a==0:
-							html_file.write('''<center><img src="../plots/g02_project_plot01.png" width=48% height=40%></center>\n''')
-						elif a==2:
-							html_file.write('''<center><img src="../plots/g02_project_plot00.png" width=400px height=400px></center>\n''')
-						elif a==3:
-							html_file.write('''<left><img src="../plots/g02_project_plot02.png" width=48% height=40% background-color:transparent></left>\n''')
-							html_file.write('''<right><img src="../plots/g02_project_plot03.png" width=48% height=40% background-color:transparent></right>\n<br>\n''')
-						elif a==4:
-							html_file.write('''<center><img src="../plots/g02_project_plot05.png" width=400px height=400px></center>\n''')
+#						if a==0:
+#							html_file.write('''<center><img src="../plots/g02_project_plot01.png" width=48% height=40%></center>\n''')
+#						elif a==2:
+#							html_file.write('''<center><img src="../plots/g02_project_plot00.png" width=400px height=400px></center>\n''')
+#						elif a==3:
+#							html_file.write('''<left><img src="../plots/g02_project_plot02.png" width=48% height=40% background-color:transparent></left>\n''')
+#							html_file.write('''<right><img src="../plots/g02_project_plot03.png" width=48% height=40% background-color:transparent></right>\n<br>\n''')
+#						elif a==4:
+#							html_file.write('''<center><img src="../plots/g02_project_plot05.png" width=400px height=400px></center>\n''')
 						
-				html_file.write("</ul>\n")						
+				list_handler(tex_file, html_file, line)	
+			elif match.group(1) == "quote":
+				quote_center_handler(tex_file, html_file, line, "quote")
 			elif match.group(1) == "center":
-				html_file.write("<center>\n")
-				while True:
-					line = tex_file.readline()
-					line = ignore(html_file, line)
-					if line[0:4] == "\\end":
-						break
-					html_syntax = tag_replace(line)
-					html_file.write(html_syntax)
-				
-				html_file.write("</center>\n")						
+				quote_center_handler(tex_file, html_file, line, "center")
 			elif match.group(1) == "document":
 				start_writing = 0
 				
@@ -314,7 +447,7 @@ while True:
 		continue
 
 #Formatting taken from here, extracted from the Tex File	
-	if line[0:12] == "\\usepackage[":
+	elif line[0:12] == "\\usepackage[":
 		match = re.search("top=(.*), b", line)
 		if match:
 			margin_top = match.group(1)
@@ -331,9 +464,10 @@ while True:
 		continue	
 			
 	
-	if start_writing == 1:
-		html_syntax = tag_replace(line)
-		html_file.write(html_syntax)			
+	else:
+		if start_writing == 1:
+			html_syntax = tag_replace(line)
+			html_file.write(html_syntax)			
 		
 post_process(html_file)
 
