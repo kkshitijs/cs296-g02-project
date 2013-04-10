@@ -42,7 +42,7 @@ def dollar_handler(line):
 			line += match.group(3)[1:]
 #			line += match.group(3)
 	
-	print("NEW LINE:", line)
+#	print("NEW LINE:", line)
 	return line				
 
 #Function to handle images in the tex file
@@ -56,7 +56,7 @@ def image_handler(html_file, line):
 		img = match.group(6)
 		width = int(match.group(2))
 		height = int(match.group(4))	
-	html_file.write("""<figure><img src="{0}.png" width="{1}" height="{2}"></figure>""".format(img, 5*width, 5*height))
+	html_file.write("""<figure><img src="../doc/{0}.png" width="{1}" height="{2}"></figure>""".format(img, 5*width, 5*height))
 	
 #Function to handle lists in the tex file
 def list_handler(tex_file, html_file, line):
@@ -135,6 +135,7 @@ def ignore(html_file, line):
 		if line[0:1] == "%" or line == "\n":
 #			print("Ignored ", line)
 			line = tex_file.readline()
+			line = dollar_handler(line)
 			line1 = line
 		else:
 			break
@@ -306,6 +307,7 @@ while True:
 		new_sect = 0
 	elif new_sect == 0:
 		line = tex_file.readline()
+		line = dollar_handler(line)
 
 	line = dollar_handler(line)
 	line = ignore(html_file, line)
@@ -314,6 +316,7 @@ while True:
 	if line[0:16] == "\\includegraphics":
 		image_handler(html_file, line)
 		line = tex_file.readline()
+		line = dollar_handler(line)
 		print("TAKING IN-----" , line)
 	
 
@@ -373,6 +376,7 @@ while True:
 					a += 1
 					line = tex_file.readline()
 					line = ignore(html_file, line)
+					line = dollar_handler(line)
 					if line[0:4] == "\\end":
 						break
 					match = re.search("\\item (.*)" , line)	
@@ -382,14 +386,14 @@ while True:
 						html_file.write(html_syntax)
 						html_file.write("</li>\n")
 						if a==0:
-							html_file.write('''<center><img src="../plots/g02_lab09_plot01.png" width=48% height=40%></center>\n''')
+							html_file.write('''<center><img src="../plots/g02_project_plot01.png" width=48% height=40%></center>\n''')
 						elif a==2:
-							html_file.write('''<center><img src="../plots/g02_lab09_plot00.png" width=400px height=400px></center>\n''')
+							html_file.write('''<center><img src="../plots/g02_project_plot00.png" width=400px height=400px></center>\n''')
 						elif a==3:
-							html_file.write('''<left><img src="../plots/g02_lab09_plot02.png" width=48% height=40% background-color:transparent></left>\n''')
-							html_file.write('''<right><img src="../plots/g02_lab09_plot03.png" width=48% height=40% background-color:transparent></right>\n<br>\n''')
+							html_file.write('''<left><img src="../plots/g02_project_plot02.png" width=48% height=40% background-color:transparent></left>\n''')
+							html_file.write('''<right><img src="../plots/g02_project_plot03.png" width=48% height=40% background-color:transparent></right>\n<br>\n''')
 						elif a==4:
-							html_file.write('''<center><img src="../plots/g02_lab09_plot05.png" width=400px height=400px></center>\n''')
+							html_file.write('''<center><img src="../plots/g02_project_plot05.png" width=400px height=400px></center>\n''')
 						
 				html_file.write("</ul>\n")						
 
@@ -408,6 +412,7 @@ while True:
 #				print("@#%@#%@#FOUND--------" , line)
 				
 				line = ignore(html_file, line)
+				line = dollar_handler(line)
 #				print("@#%@#%@#FOUND--------" , line)
 				match = re.search("{(.*)}" , line)
 #				print("@#%@#%@#FOUND--------" , match.group())
@@ -419,7 +424,7 @@ while True:
 				#Handling the authors, roll_no's and email_ids
 				line = tex_file.readline()
 				line = ignore(html_file, line)
-				line = ignore(html_file, line)
+				line = dollar_handler(line)
 				if line[0:7] == "\\author":
 				
 #					print("REACHED AUTHOR", line)
@@ -429,21 +434,24 @@ while True:
 						else:
 							line = tex_file.readline()
 							line = ignore(html_file, line)
+							line = dollar_handler(line)
 #							print("LINE IS", line)
 							match = re.search("[A-Za-z ]+", line)
 #							print("MATCH IS", match.group())
 							author.append(match.group())
 							line = tex_file.readline()	
 							line = ignore(html_file, line)
+							line = dollar_handler(line)
 							match = re.search("[0-9A-Za-z ]+" , line)
 							roll_no.append(match.group())
 							line = tex_file.readline()
 							line = ignore(html_file, line)
+							line = dollar_handler(line)	
 							match = re.search("[A-Za-z.-:]+@[A-Za-z.-:]+" , line)
 							email_id.append(match.group())
 							line = tex_file.readline()
 							line = ignore(html_file, line)
-
+							line = dollar_handler(line)
 				
 #				print(author)
 #				print(roll_no)
@@ -469,7 +477,8 @@ while True:
 				html_file.write("<br>\n")						
 				line = tex_file.readline()
 				line = ignore(html_file, line)
-
+				line = dollar_handler(line)
+	
 				if line[0:5] == "\\date":
 				
 					html_file.write("<center><SCRIPT>document.write(Date())</SCRIPT></center>\n")
@@ -498,6 +507,7 @@ while True:
 	
 	else:
 		if start_writing == 1:
+			line = dollar_handler(line)
 			html_syntax = tag_replace(line)
 			html_file.write(html_syntax)			
 		

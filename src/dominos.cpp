@@ -16,6 +16,16 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+/** \mainpage
+
+A Rube Goldberg machine, contraption, invention, device, or apparatus is a deliberately over-engineered or overdone machine that performs a very simple task in a very complex fashion, usually including a chain reaction.<br>
+We have developed a machine that ends up sliding a gate. Seems simple, right?<br>
+Have a look at the initial contraption that we built below.<br>
+
+<img src="../state_00.png">
+
+*/
+
 #include "cs296_base.hpp"
 #include "render.hpp"
 
@@ -131,9 +141,9 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       b1->CreateFixture(&shape, 0.0f);/// add a fixture to the body with shape as defined above and having 0 density
     }
       
-     /// <br> 
-    /// 2. <b>Various horizontal and inclined shelves</b> <br> <br>
-    /// 2. a) <b> Top horizontal shelf </b>
+     ///  
+    ///<br> 2. <b>Various horizontal and inclined shelves</b>
+    /// <br> 2. a) <b> Top horizontal shelf </b>
     {
     	/**shape is a line segment (b2Edgeshape) of length 26 with end points (-41.0f,37.5f) and (-15.0f,37.5f)*/
       b2EdgeShape shape;
@@ -144,8 +154,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       ground->CreateFixture(&shape, 0.0f);/// add a fixture to the body with shape as defined above and having 0 density
     }
 
-	/// <br>
-	/// 2. b)<b> The horizontal shelf just below the open box (connected to the pulley near the top)</b>
+	/// 
+	/// <br> 2. b)<b> The horizontal shelf just below the open box (connected to the pulley near the top)</b>
     {
 	/**shape is a line segment (b2Edgeshape) of length 6 with end points (-13.0f,26.0f) and (-7.0f,26.0f)*/
 	b2EdgeShape shape;
@@ -156,8 +166,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       ground->CreateFixture(&shape, 0.0f);/// add a fixture to the body with shape as defined above and having 0 density	
     }
     
-    ///<br>
-    /// 2. c) <b> Inclined shelf connected to the topmost horizontal shelf</b>
+    ///
+    /// <br>2. c) <b> Inclined shelf connected to the topmost horizontal shelf</b>
     {
     	/**shape is a 4 X 0.02 rectangle placed at (1.414f,-1.414f) wrt the body it will be attached to, and it is rotated by -0.707 radians in counter clockwise direction.     
     	*/
@@ -172,8 +182,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
     
     //other platforms
     {
-      ///<br>
-      /// 2. d)<b> Horizontal shelf below the see saw on the top </b> 
+      ///
+      ///<br> 2. d)<b> Horizontal shelf below the see saw on the top </b> 
     	/**shape is a line segment (b2Edgeshape) of length 24 with end points (4.0f,23.0f) and (30.0f,23.0f)*/
     	b2EdgeShape shape;
       shape.Set(b2Vec2(4.0f,23.0f) , b2Vec2(30.0f,23.0f));  
@@ -215,8 +225,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       ground->CreateFixture(&shape, 0.0f); /// add a fixture to the existing body with the new shape definition and having 0 density.    
     }
 
-    /// <br> 
-    /// 3. a) <b>Dominos at the top</b>
+    ///  
+    ///<br> 3. a) <b>Dominos at the top</b>
     //Dominos
     {
       b2PolygonShape shape;
@@ -260,8 +270,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       
     }  
 
-    /// <br> 	
-    /// 4. <b>The pendulum that knocks down the dominos</b>
+    ///  	
+    /// <br>4. <b>The pendulum that knocks down the dominos</b>
     //The pendulum that knocks the dominos off
     {
     	/** It Consists of two bodies and a joint.*/
@@ -296,8 +306,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       m_world->CreateJoint(&jd);/// create the joint using jd
     }
     
-    /// <br> 
-    /// 5. <b>The pulley system</b>   
+    ///  
+    /// <br>5. <b>The pulley system</b>   
     /**It consists of 2 bodies and a pulley joint.*/
     //The pulley system
     {
@@ -306,8 +316,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       bd->position.Set(-12.0f,35.0f);/// first body is set at position (-12.0f,35.0f)
       bd->fixedRotation = true;/// bodies not allowed to rotate
       
-      ///<br>
-      /// 5. a)<b> The open box (first body of the pulley)</b>
+      ///
+      ///<br> 5. a)<b> The open box (first body of the pulley)</b>
       //The open box
       b2FixtureDef *fd1 = new b2FixtureDef;/// define a fixture fd1 ( type  b2FixtureDef*)
       fd1->density = 20.0;/// set density to 20
@@ -339,8 +349,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       box1->CreateFixture(fd2);/// add fixture fd2 to box1
       box1->CreateFixture(fd3);/// add fixture fd3 to box1 (coordinates of the fixtures are wrt box1)
 	
-	///<br>
-      /// 5. b)<b> The bar</b>
+	///
+      ///<br> 5. b)<b> The bar</b>
       //The bar
       bd->position.Set(-1.5,35);/// set position to (-1.5,35) for the second body which is a bar	
       fd1->density = 42.1;/// set density of fd1 (fixture created earlier) to 42.1. this ensures that the 2 bodies are of nearly equal weight.	  
@@ -366,8 +376,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       m_world->CreateJoint(myjoint);/// create joint in b2World using myjoint
     }
 
-	///<br>
-    /// 6. <b>The see-saw system near the top</b>
+	///
+    ///<br> 6. <b>The see-saw system near the top</b>
     //The see-saw system near the top
     {
       /// 6. a)<b>The triangle wedge</b>
@@ -390,8 +400,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       sbody = m_world->CreateBody(&wedgebd);/// create the body using wedgebd
       sbody->CreateFixture(&wedgefd);/// add the fixture wedgefd to sbody  ( the vertices of wedgefd will have coordinates wrt sbody )
 	
-	///<br>
-      /// 6. b)<b>The plank on top of the wedge</b>
+	///
+      ///<br> 6. b)<b>The plank on top of the wedge</b>
       //The plank on top of the wedge
       b2PolygonShape shape;/// shape is a polygon shape we will create of type  b2PolygonShape
       shape.SetAsBox(11.0f, 0.1f);/// it is a 22 X 0.2 rectangle 
@@ -405,8 +415,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       fd2->shape = &shape;/// set its shape to the shape variable defined above
       body->CreateFixture(fd2); /// add the fixture fd2 to body
 	
-	///<br> 
-      /** 6. c) <b>create a revolute joint at the point where the wedge and the plank meet for the see-saw.</b>*/
+	/// 
+      /**<br> 6. c) <b>create a revolute joint at the point where the wedge and the plank meet for the see-saw.</b>*/
       b2RevoluteJointDef jd;///define a revolute (revolving) joint jd of type b2RevoluteJointDef
       b2Vec2 anchor;/// create a 2d array using b2vec2 called anchor to store location of anchor of point
       anchor.Set(12.0f, 37.0f);/// set coordinates of anchor to (12,37)
@@ -471,16 +481,16 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
 	}	
     }
     
-    ///<br>
-    ///8. <b> pulley system near the bottom</b>
+    ///
+    ///<br>8. <b> pulley system near the bottom</b>
     {
    	b2BodyDef *bd = new b2BodyDef;/// b2BodyDef* type variable bd which describes the 2 bodies
       bd->type = b2_dynamicBody;/// Both the bodies are dynamic(i.e they can move)
       bd->position.Set(-16.0f,6.0f);/// first body is set at position (-16,6)
       bd->fixedRotation = true;/// bodies not allowed to rotate
       
-      ///<br>
-      /// 8. a)<b> The open box</b>
+      ///
+      ///<br> 8. a)<b> The open box</b>
       //The open box
       b2FixtureDef *fd1 = new b2FixtureDef;/// define a fixture fd1 ( type  b2FixtureDef*)
       fd1->density = 21.5;/// set density to 21.5
@@ -513,8 +523,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       box1->CreateFixture(fd2);/// add fixture fd2 to box1
       box1->CreateFixture(fd3);/// add fixture fd3 to box1 (coordinates of the fixtures are wrt box1)
 	
-	///<br>
-      /// 8. b)<b> The domino</b>
+	///
+      ///<br> 8. b)<b> The domino</b>
       //The domino
       bd->position.Set(-8.5f,1.5f);///set position of the body to (-8.5,1.5).
       b2PolygonShape bs4;
@@ -542,8 +552,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       m_world->CreateJoint(myjoint);/// create joint in b2World using myjoint
     }
     
-    //<br>
-    ///9. <b>dominos near the bottom (which will topple on both sides) </b>
+    //
+    ///<br>9. <b>dominos near the bottom (which will topple on both sides) </b>
     {
    	b2PolygonShape shape;
       shape.SetAsBox(0.5f, 2.5f);/// create a 1 X 5 rectangle called shape (type b2PolygonShape) 
@@ -581,8 +591,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
     }
     
     
-    ///<br>
-    /// 10. <b>The revolving horizontal platform</b>
+    ///
+    ///<br> 10. <b>The revolving horizontal platform</b>
     {
       b2PolygonShape shape, shape2;  
       shape.SetAsBox(2.2f, 0.2f);/// define a 4.4 X 0.4 rectangular shape called shape (b2PolygonShape type)
@@ -620,8 +630,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
       m_world->CreateJoint(&jointDef);/// create the joint using jointDef
     }
 
-    /// <br>
-    /// 11. <b>Sequence of 5 see-saw systems (see saw + ball + base) in lower right portion</b> 
+    ///
+    /// <br> 11. <b>Sequence of 5 see-saw systems (see saw + ball + base) in lower right portion</b> 
     
     for(int a = 0; a <= 4; a++)
     {
@@ -671,8 +681,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
 
  	}   
 
-	/// <br>
-	/// 12. <b>Sliding Gate</b>
+	///
+	/// <br> 12. <b>Sliding Gate</b>
 	{	
 		/// 12. a)<b>Framing the Gate</b> 
 	    b2EdgeShape shape;
@@ -691,8 +701,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
 		/** This is the left-end of the sliding-gate. The gate will slide upto this point*/
 		ground->CreateFixture(&shape, 0.0f);/// add a fixture to the body with shape as defined above and having 0 density
 
-		/// <br>
-		/// 12. b)<b>The Gate Connection</b>
+		///
+		/// <br> 12. b)<b>The Gate Connection</b>
     	b2PolygonShape shape2, shape3;
     	shape2.SetAsBox(2.5, 5);/// create a 5X10 rectangle called <i>shape2</i> (type b2PolygonShape) 
 		/** This is the gate between the rods*/
@@ -722,8 +732,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
    
     }
     
-    /// <br>
-    /// 13. <b>Balls and Hinged bars at the bottom</b>
+    /// 
+    /// <br> 13. <b>Balls and Hinged bars at the bottom</b>
 	{
 	for(int cust = 0; cust < 4; cust++)
 	{
@@ -765,8 +775,8 @@ void dominos_t::see_saw_create(float x_pos, float y_pos, float plank_length, flo
     	jointDef.collideConnected = false;/// disallow collision 
     	m_world->CreateJoint(&jointDef);/// create the joint using jointDef
 
-		/// <br>
-		/// 13. b)<b>The train of balls</b>
+		/// 
+		///<br> 13. b)<b>The train of balls</b>
 		b2Body* spherebody;
 			
 		b2CircleShape circle;/// create a circle as the shape

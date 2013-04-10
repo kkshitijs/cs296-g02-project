@@ -38,7 +38,7 @@ OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 OBJS_WITH_GUI_DISABLED := $(filter-out $(OBJDIR)/main.o, $(OBJS))
 OBJS_WITH_GUI_ENABLED := $(filter-out $(OBJDIR)/main_gui_disabled.o, $(OBJS))
 
-.PHONY: install setup build  exe1 doc profile timimg gen_html_timing report exe2 unbuild clean dist
+.PHONY: install setup build  exe1 doc profile timimg gen_html_timing report exe2 unbuild clean dist all
 
 all: setup build exe1 doc profile timimg gen_html_timing report exe2
 
@@ -48,7 +48,6 @@ setup:
 	@mkdir -p bin
 	@mkdir -p plots
 	@mkdir -p data
-	@mkdir -p $(INSTALL_PATH)
 		
 exe1 : create_objects
 	@$(CC) -o $(BINDIR)/cs296_exe $(LDFLAGS) $(OBJS_WITH_GUI_DISABLED) $(LIBS)
@@ -95,7 +94,7 @@ profile: exe1
 	@gprof $(BINDIR)/cs296_exe gmon.out | ./gprof2dot.py | dot -Tpng -o release.png
 	@$(MV) g02_release_prof.dat ./data/
 	@$(MV) release.png ./data/
-	@ rm gprof2dot.py gmon.out	
+	@$(RM) gprof2dot.py *.out	
 	
 timing : exe1 
 	@cp $(SPTDIR)/g02_gen_csv.py ./
@@ -130,7 +129,8 @@ gen_html_timing : timing
 	@$(MV) g02_timing_report.html ./html
 	@$(RM) *.py *.tex
 	
-install: all
+install: ./bin/cs296_exe ./doc/g02_project_report.pdf ./html/g02_timing_report.html ./plots/g02_project_plot05.png ./data/release.png
+	@mkdir -p $(INSTALL_PATH)
 	@cp -r ./bin $(INSTALL_PATH)
 	@mkdir -p $(INSTALL_PATH)/doc
 	@cp $(DOCDIR)/*.pdf $(INSTALL_PATH)/doc/
