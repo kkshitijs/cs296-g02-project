@@ -19,26 +19,30 @@ a = -1
 #Function to handle inline $s
 def dollar_handler(line):
 
-#	print("LINE IS--------", line)
-	match = re.search("$(.*?)$", line)
+	print("LINE IS--------", line)
+	match = re.search("(.*)(?<=\$)([^\$]*)(?=\$)(.*)", line)
 	if match:
-		word = match.group(1)
-#		print("WORD IS-",word, "----")
+		word = match.group(2)
+		print("WORD IS-",word, "----")
 		if word == "":
 			return line
-		if word[0:7] != "\\approx":
-			match = re.search("(.*)$(.*)$(.*)", line)
-			line = ""
-			line += match.group(1)
-			line += match.group(3)
+		match2 = re.search(".*approx(.*)", word)
+		if match2:
+#			match = re.search("(.*)$(.*)$(.*)", line)
+			line = match.group(1)[:-1]
+			line += " ~"
+			line += match2.group(1)
+			line += match.group(3)[1:]
 		else:
-			match = re.search("(.*)$(.*)$(.*)", line)
-			line = ""
-			line += match.group(1)
-			line += "~"
-			line += word[7:-1]
-			line += match.group(3)
+#			match = re.search("(.*)$(.*)$(.*)", line)
+#			line = ""
+			line = match.group(1)[:-1]
+#			print("Adding to line" , 
+#			line += "~"
+			line += match.group(3)[1:]
+#			line += match.group(3)
 	
+	print("NEW LINE:", line)
 	return line				
 
 #Function to handle images in the tex file
@@ -51,8 +55,8 @@ def image_handler(html_file, line):
 	if match:
 		img = match.group(6)
 		width = int(match.group(2))
-		height = int(match.group(4))
-	html_file.write("""<figure><img src="{0}.png" width="{1}" height="{2}"></figure>""".format(img, width*3, height*3))
+		height = int(match.group(4))	
+	html_file.write("""<figure><img src="{0}.png" width="{1}" height="{2}"></figure>""".format(img, 5*width, 5*height))
 	
 #Function to handle lists in the tex file
 def list_handler(tex_file, html_file, line):
@@ -60,11 +64,14 @@ def list_handler(tex_file, html_file, line):
 	html_file.write("<ul>\n")
 	while True:
 		line = tex_file.readline()
+		line = dollar_handler(line)
 		line = ignore(html_file, line)
 		
 		if line[0:16] == "\\includegraphics":
 			image_handler(html_file, line)
 			line = tex_file.readline()
+			line = ignore(html_file, line)
+			line = dollar_handler(line)
 		if line[0:4] == "\\end":
 			break
 		if line[0:6] == "\\begin":
@@ -95,9 +102,12 @@ def quote_center_handler(tex_file, html_file, line, tag):
 	while True:
 		line = tex_file.readline()
 		line = ignore(html_file, line)
+		line = dollar_handler(line)
 		if line[0:16] == "\\includegraphics":
 			image_handler(html_file, line)
 			line = tex_file.readline()
+			line = ignore(html_file, line)
+			line = dollar_handler(line)
 		if line[0:4] == "\\end":
 			break
 		if line[0:6] == "\\begin":
@@ -296,7 +306,9 @@ while True:
 	elif new_sect == 0:
 		line = tex_file.readline()
 
-#	line = dollar_handler(line)
+	line = dollar_handler(line)
+	line = ignore(html_file, line)
+	
 
 	if line[0:16] == "\\includegraphics":
 		image_handler(html_file, line)
@@ -318,12 +330,12 @@ while True:
 		match = re.search("section{(.*)}", line)
 		if match:
 #			print("Writing", match.group(1))
-			if ((match.group(1)).split(' '))[0] == "Timing":
-				line = tex_file.readline()
-				while not(line[0:8] == "\\section"):
-					line = tex_file.readline()
-					new_sect = 1
-				continue	
+#			if ((match.group(1)).split(' '))[0] == "Timing":
+#				line = tex_file.readline()
+#				while not(line[0:8] == "\\section"):
+#					line = tex_file.readline()
+#					new_sect = 1
+#				continue	
 			if ((match.group(1)).split(' '))[0] == "A" and ((match.group(1)).split(' '))[1] == "Thousand":
 				break
 			html_syntax = tag_replace(match.group(1))

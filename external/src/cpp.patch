@@ -1,0 +1,12 @@
+73a74
+>     m_start=t;
+80,82c81,85
+<     timeval t;
+<     gettimeofday(&t, 0);
+<     return (t.tv_sec - m_start_sec) * 1000 + t.tv_usec * 0.001f - m_start_msec;
+---
+>   timeval t, res;
+>   gettimeofday(&t, 0);
+>   timersub(&t, &m_start, &res);
+>   return res.tv_sec*1000 + res.tv_usec * 0.001f;
+>   //return (t.tv_sec - m_start_sec) * 1000 + t.tv_usec * 0.001f - m_start_msec;

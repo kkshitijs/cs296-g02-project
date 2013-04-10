@@ -47,7 +47,7 @@ A Rube Goldberg machine is a deliberately over-engineered or overdone machine th
 It all started way back in January 2013 when we had to first think of a design to implement as a course project. We were naive back then and thought of making a complicated machine. A sequence of processes will lead to a final goal, which we set as ``Putting Out A Fire". The initially proposed design looked like this.
 
 \begin{center}
-\includegraphics[width=160mm, height=100mm]{RubeGoldberg.eps}\\
+\includegraphics[width=120mm, height=80mm]{RubeGoldberg.eps}\\
 \emph{Original Proposed Design of Rube Goldberg}
 \end{center}
 
@@ -58,7 +58,7 @@ We saw a couple of videos on \emph{YouTube} regarding usage of Box2D and also gl
 Currently, our design looks slightly different. A snapshot of the initial state is given below.
 
 \begin{center}
-\includegraphics[width=160mm, height=120mm]{state_00.eps}\\
+\includegraphics[width=120mm, height=80mm]{state_00.eps}\\
 \emph{State of Machine before Start}
 \end{center}
 
@@ -139,7 +139,7 @@ As noted earlier, our objective was to put out a fire. While it did seem interes
 \section{Timing Analysis}
 
 Timing analysis is a key part of any project. It is a good indicator of the efficiency of the written code. So, here we have generated 
-different plots using \emph{Matplotlib}$^{\cite{matplotlib_manual}}$ and present an analysis based on them.
+different plots using \emph{Matplotlib} $^{\cite{matplotlib_manual}}$ and present an analysis based on them.
 
 \subsection{Results from the graphs generated}
 
@@ -165,11 +165,7 @@ The profiling was done here following these steps :
 
 \subsection{Analyzing Flat-Profile}
 
-<<<<<<< HEAD
-The Release version itself includes optimizations in its build process. Plus, we have also included the optimisation flag \emph{-O3} in the compiling and linking process. This leads to highly efficient code, that runs almost \emph{6 times faster} . There is a listing of \emph{55} functions, of which the most intensive are $\approx 5-10$ only. 
-=======
 The Release version itself includes optimizations in its build process. Plus, we have also included the optimisation flag \emph{-O3} in the compiling and linking process. This leads to highly efficient code. There is a listing of \emph{75} functions, of which the most intensive are $\approx 4-5$ only. 
->>>>>>> e0a473aee53897d3a82d8f349767f474307703bd
 
 \begin{center}
 \includegraphics[width=195mm, height=60mm]{profile_data.eps}\\

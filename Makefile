@@ -141,7 +141,8 @@ unbuild:
 	
 clean:
 	@$(ECHO) "Cleaning up the files...."
-	@$(RM) -rf $(OBJDIR) $(BINDIR) $(DATDIR)/* *~ $(SRCDIR)/*~ $(DOCDIR)/*pdf $(DOCDIR)/html *.csv *.sh
+	@$(RM) -rf $(OBJDIR) $(BINDIR) $(DATDIR) *~ $(SRCDIR)/*~ $(DOCDIR)/*pdf $(DOCDIR)/html *.csv *.sh
+	@$(RM) -rf $(DOCDIR)/*~ $(SPTDIR)/*~
 	@$(RM) -rf ./plots
 	@$(RM) -rf ./scripts/*~
 	@$(RM) -f *.out
