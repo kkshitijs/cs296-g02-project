@@ -16,14 +16,7 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Analyzing Call-Graph}{5}}
 \bibstyle{plain}
 \bibdata{refs}
+\bibcite{wiki_rube}{1}
 \@writefile{toc}{\contentsline {section}{\numberline {7}A Thousand Words}{6}}
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{Fig. : Stages of the Simulation}{{\caption@xref {Fig. : Stages of the Simulation}{ on input line 222}}{7}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {Stage 1}}}{7}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {Stage 2}}}{7}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {Stage 3}}}{7}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {Stage 4}}}{7}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {Stage 5}}}{7}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {Stage 6}}}{7}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(g)}{\ignorespaces {Stage 7}}}{7}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(h)}{\ignorespaces {Stage 8}}}{7}}
+\bibcite{box_manual}{2}
+\bibcite{matplotlib_manual}{3}

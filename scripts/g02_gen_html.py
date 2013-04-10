@@ -299,6 +299,7 @@ print("Opened File!")
 line = ""
 start_writing = 0
 new_sect = 0
+timing_section = 0
 while True:
 
 	if new_sect == 1:
@@ -330,12 +331,14 @@ while True:
 		match = re.search("section{(.*)}", line)
 		if match:
 #			print("Writing", match.group(1))
-#			if ((match.group(1)).split(' '))[0] == "Timing":
-#				line = tex_file.readline()
+			if ((match.group(1)).split(' '))[0] == "Timing":
+				timing_section = 1
 #				while not(line[0:8] == "\\section"):
 #					line = tex_file.readline()
 #					new_sect = 1
 #				continue	
+			else:
+				timing_section = 0
 			if ((match.group(1)).split(' '))[0] == "A" and ((match.group(1)).split(' '))[1] == "Thousand":
 				break
 			html_syntax = tag_replace(match.group(1))
@@ -362,18 +365,19 @@ while True:
 		match = re.search("begin{(.*)}" , line)
 		if match:
 #			print("Found for BEGIN" , match.group(1))
-			if match.group(1) == "itemize":
+			if match.group(1) == "itemize" and timing_section == 1:
 				
-#						if a==0:
-#							html_file.write('''<center><img src="../plots/g02_project_plot01.png" width=48% height=40%></center>\n''')
-#						elif a==2:
-#							html_file.write('''<center><img src="../plots/g02_project_plot00.png" width=400px height=400px></center>\n''')
-#						elif a==3:
-#							html_file.write('''<left><img src="../plots/g02_project_plot02.png" width=48% height=40% background-color:transparent></left>\n''')
-#							html_file.write('''<right><img src="../plots/g02_project_plot03.png" width=48% height=40% background-color:transparent></right>\n<br>\n''')
-#						elif a==4:
-#							html_file.write('''<center><img src="../plots/g02_project_plot05.png" width=400px height=400px></center>\n''')
+						if a==0:
+							html_file.write('''<center><img src="../plots/g02_project_plot01.png" width=48% height=40%></center>\n''')
+						elif a==2:
+							html_file.write('''<center><img src="../plots/g02_project_plot00.png" width=400px height=400px></center>\n''')
+						elif a==3:
+							html_file.write('''<left><img src="../plots/g02_project_plot02.png" width=48% height=40% background-color:transparent></left>\n''')
+							html_file.write('''<right><img src="../plots/g02_project_plot03.png" width=48% height=40% background-color:transparent></right>\n<br>\n''')
+						elif a==4:
+							html_file.write('''<center><img src="../plots/g02_project_plot05.png" width=400px height=400px></center>\n''')
 						
+			elif match.group(1) == "itemize":
 				list_handler(tex_file, html_file, line)	
 			elif match.group(1) == "quote":
 				quote_center_handler(tex_file, html_file, line, "quote")

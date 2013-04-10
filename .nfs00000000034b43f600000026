@@ -168,7 +168,7 @@ The profiling was done here following these steps :
 The Release version itself includes optimizations in its build process. Plus, we have also included the optimisation flag \emph{-O3} in the compiling and linking process. This leads to highly efficient code. There is a listing of \emph{75} functions, of which the most intensive are $\approx 4-5$ only. 
 
 \begin{center}
-\includegraphics[width=180mm, height=60mm]{profile_data.eps}\\
+\includegraphics[width=195mm, height=60mm]{profile_data.eps}\\
 \emph{Flat Profile Data for Release-version profiling}
 \end{center}
 
@@ -199,7 +199,7 @@ Also, when we had run the base code in debug version in lab 7, we had realized t
 The call graph for the Release-version profiling is totally horizontal, indicating that the child functions have been placed \emph{inline}.  This turns out to be quite an efficient implementation, since it removes all the interconnections between the different functions, and leads to a highly structured and layered function call pattern.
 
 \begin{center}
-\includegraphics[width=180mm, height=25mm]{call_graph.eps}\\
+\includegraphics[width=195mm, height=30mm]{call_graph.eps}\\
 \emph{Cropped Call Graph for Release-version profiling}
 \end{center}
 

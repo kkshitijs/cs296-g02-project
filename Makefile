@@ -16,6 +16,7 @@ BINDIR = $(PROJECT_ROOT)/bin
 DOCDIR = $(PROJECT_ROOT)/doc
 DATDIR = $(PROJECT_ROOT)/data
 SPTDIR = $(PROJECT_ROOT)/scripts
+INSTALL_PATH = $(PROJECT_ROOT)/install
 
 # Library Paths
 BOX2D_ROOT=$(EXTERNAL_ROOT)
@@ -39,14 +40,15 @@ OBJS_WITH_GUI_ENABLED := $(filter-out $(OBJDIR)/main_gui_disabled.o, $(OBJS))
 
 .PHONY: install setup build  exe1 doc profile timimg gen_html_timing report exe2 unbuild clean dist
 
-install: setup build exe1 doc profile timimg gen_html_timing report exe2
-	
+all: setup build exe1 doc profile timimg gen_html_timing report exe2
+
 setup:
 	@$(ECHO) "Setting up compilation..."
 	@mkdir -p obj
 	@mkdir -p bin
 	@mkdir -p plots
 	@mkdir -p data
+	@mkdir -p $(INSTALL_PATH)
 		
 exe1 : create_objects
 	@$(CC) -o $(BINDIR)/cs296_exe $(LDFLAGS) $(OBJS_WITH_GUI_DISABLED) $(LIBS)
@@ -128,7 +130,17 @@ gen_html_timing : timing
 	@$(MV) g02_timing_report.html ./html
 	@$(RM) *.py *.tex
 	
+install: all
+	@cp -r ./bin $(INSTALL_PATH)
+	@mkdir -p $(INSTALL_PATH)/doc
+	@cp $(DOCDIR)/*.pdf $(INSTALL_PATH)/doc/
+	@cp $(DOCDIR)/*.png $(INSTALL_PATH)/doc/
+	@cp -r ./html $(INSTALL_PATH)
+	@cp -r ./plots $(INSTALL_PATH)
+	@cp -r ./data $(INSTALL_PATH)
+
 dist : unbuild 
+	@$(RM) -rf $(INSTALL_PATH)
 	cd ..;\
 	tar cvfz cs296_g02_project cs296_g02_project.tar.gz
 	
@@ -143,6 +155,7 @@ clean:
 	@$(ECHO) "Cleaning up the files...."
 	@$(RM) -rf $(OBJDIR) $(BINDIR) $(DATDIR) *~ $(SRCDIR)/*~ $(DOCDIR)/*pdf $(DOCDIR)/html *.csv *.sh
 	@$(RM) -rf $(DOCDIR)/*~ $(SPTDIR)/*~
+	@$(RM) -f *.py
 	@$(RM) -f ./html/g02_timing_report.html
 	@$(RM) -rf ./plots
 	@$(RM) -rf ./scripts/*~
