@@ -32,7 +32,8 @@ The directory structure followed is :
 	-> external : same as base-code, but b2Timer.cpp and b2Timer.h are the patched versions being used
 	-> bin : created while installing the project. the executable, which has GUI enabled, is generated here
 	-> html : the project main webpage is here. the timing report is generated here in html after parsing the tex file
-	-> doc : contains the images in .png and .eps formats needed for the reports and html pages. Also, the Doxygen commented code is generated here under "html" directory
+	-> doc : contains the images in .png and .eps formats needed for the reports and html pages. 
+		Also, the Doxygen commented code is generated here under "html" directory
 	-> data : created while installing the project. the profile.dat, the call graphs etc. generated from profiling are here
 	-> scripts : the python scripts to generate tex2html, the csv_generator, plot-generator from Matplotlib and gprof2dot.py is here
 	-> obj : created while installing the project. stores the object files of the corresponding source files in src.
