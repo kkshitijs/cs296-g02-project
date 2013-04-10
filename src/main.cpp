@@ -94,7 +94,7 @@ void create_glui_ui(void)
   
   new GLUI_Column( glui, false );
   glui->add_statictext("Display Options"); 
-  GLUI_Panel* drawPanel =	glui->add_panel("Draw");
+  GLUI_Panel* drawPanel = glui->add_panel("Draw");
   glui->add_checkbox_to_panel(drawPanel, "Shapes", &settings.draw_shapes);
   glui->add_checkbox_to_panel(drawPanel, "Joints", &settings.draw_joints);
   glui->add_checkbox_to_panel(drawPanel, "AABBs", &settings.draw_AABBs);
