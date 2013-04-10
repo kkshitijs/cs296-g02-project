@@ -2,7 +2,7 @@ This project has been done by Group 2 for CS 296.
 
 The members are 
 
-  -> Kshitij Singh : 110050016
+  	-> Kshitij Singh : 110050016
 	-> Prithviraj Madhukar Billa : 110050065
 	-> Sahil Jindal : 110020043
 	
