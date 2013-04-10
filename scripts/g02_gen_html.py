@@ -367,16 +367,32 @@ while True:
 #			print("Found for BEGIN" , match.group(1))
 			if match.group(1) == "itemize" and timing_section == 1:
 				
+				html_file.write("<ul>\n")
+				while True:
+#					plot_no += 1
+					a += 1
+					line = tex_file.readline()
+					line = ignore(html_file, line)
+					if line[0:4] == "\\end":
+						break
+					match = re.search("\\item (.*)" , line)	
+					if match:
+						html_syntax = tag_replace(match.group(1))
+						html_file.write("<li>")
+						html_file.write(html_syntax)
+						html_file.write("</li>\n")
 						if a==0:
-							html_file.write('''<center><img src="../plots/g02_project_plot01.png" width=48% height=40%></center>\n''')
+							html_file.write('''<center><img src="../plots/g02_lab09_plot01.png" width=48% height=40%></center>\n''')
 						elif a==2:
-							html_file.write('''<center><img src="../plots/g02_project_plot00.png" width=400px height=400px></center>\n''')
+							html_file.write('''<center><img src="../plots/g02_lab09_plot00.png" width=400px height=400px></center>\n''')
 						elif a==3:
-							html_file.write('''<left><img src="../plots/g02_project_plot02.png" width=48% height=40% background-color:transparent></left>\n''')
-							html_file.write('''<right><img src="../plots/g02_project_plot03.png" width=48% height=40% background-color:transparent></right>\n<br>\n''')
+							html_file.write('''<left><img src="../plots/g02_lab09_plot02.png" width=48% height=40% background-color:transparent></left>\n''')
+							html_file.write('''<right><img src="../plots/g02_lab09_plot03.png" width=48% height=40% background-color:transparent></right>\n<br>\n''')
 						elif a==4:
-							html_file.write('''<center><img src="../plots/g02_project_plot05.png" width=400px height=400px></center>\n''')
+							html_file.write('''<center><img src="../plots/g02_lab09_plot05.png" width=400px height=400px></center>\n''')
 						
+				html_file.write("</ul>\n")						
+
 			elif match.group(1) == "itemize":
 				list_handler(tex_file, html_file, line)	
 			elif match.group(1) == "quote":
