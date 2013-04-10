@@ -1,0 +1,30 @@
+html
+	{
+		background-color:#5198c0;
+	}
+
+	body
+	{
+		width:800px;
+		margin:0 auto;
+		opacity:0.99;
+		font-family:Tahoma, Geneva, sans-serif;
+		
+	}
+	header#title
+	{
+		margin:0;
+		font-family: "Trebuchet MS", Helvetica, sans-serif;
+		text-align:center;
+		color:black;
+		font-size:16px;
+	}
+	.one{
+		color:#ffffff;
+		text-align: center;
+	}
+	img
+	{
+		width:700px;
+		height:500px;
+	}
