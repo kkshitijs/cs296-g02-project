@@ -132,7 +132,7 @@ dist : unbuild
 	cd ..;\
 	tar cvfz cs296_g02_project cs296_g02_project.tar.gz
 	
-unbuild:
+unbuild: clean
 	@$(ECHO) "Removing the build...."
 	@$(RM) -rf $(EXTERNAL_ROOT)/src/Box2D/
 	@$(RM) -rf $(EXTERNAL_ROOT)/include/*
@@ -143,6 +143,7 @@ clean:
 	@$(ECHO) "Cleaning up the files...."
 	@$(RM) -rf $(OBJDIR) $(BINDIR) $(DATDIR) *~ $(SRCDIR)/*~ $(DOCDIR)/*pdf $(DOCDIR)/html *.csv *.sh
 	@$(RM) -rf $(DOCDIR)/*~ $(SPTDIR)/*~
+	@$(RM) -f ./html/g02_timing_report.html
 	@$(RM) -rf ./plots
 	@$(RM) -rf ./scripts/*~
 	@$(RM) -f *.out
